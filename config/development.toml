@@ -1,0 +1,52 @@
+port = 12001
+
+[log]
+level = "debug"
+
+[postgres]
+hostname = "localhost"
+port = 12002
+username = "dev"
+password = "dev"
+database = "dev"
+
+[jwt]
+issuer = "http://localhost:12003/default"
+audience = "eventail"
+superAdminPredicate = "sub == 'admin'"
+integrationPredicate = "sub == 'integration'"
+debug = true
+
+[userInfo]
+displayNamePath = "displayName"
+emailAddressPath = "email"
+
+[cors]
+origin = "http://localhost:12000"
+
+[s3]
+bucketName = "uploads"
+maxFileSize = "10mb"
+publicBaseUrl = "http://localhost:12006/uploads"
+
+[s3.client]
+endpoint = "http://localhost:12006"
+region = "local"
+forcePathStyle = true
+
+[s3.client.credentials]
+accessKeyId = "rustfsadmin"
+secretAccessKey = "rustfsadmin"
+
+[frontend]
+baseUrl = "http://localhost:12000"
+
+[email]
+sender = "eventail@example.test"
+
+[email.smtp]
+host = "localhost"
+port = 12005
+
+[email.smtp.tls]
+rejectUnauthorized = false

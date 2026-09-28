@@ -1,0 +1,6 @@
+/node_modules
+/dist
+openapi.json
+/tsconfig.tsbuildinfo
+/src/migration/.snapshot-*.json
+!/src/migration/.snapshot-dev.json

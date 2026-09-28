@@ -1,0 +1,13 @@
+<p>Hello {{ hostName }},</p>
+
+<p>Good news: your session "{{ sessionTitle }}" has been accepted for {{ editionName }}.</p>
+
+<p>Please review your session one last time and confirm it once its content is final. After confirming, you can no longer edit it yourself.</p>
+{%- if note != "" %}
+
+<p>A note from the organizers:</p>
+
+<p>{{ note | escape | newline_to_br | raw }}</p>
+{%- endif %}
+
+<p><a href="{{ sessionUrl }}">Review and confirm your session</a></p>
