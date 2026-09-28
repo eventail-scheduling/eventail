@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { after, before, beforeEach, describe, it } from "node:test";
+import { compile } from "@jmespath-community/jmespath";
 import { isAfter } from "temporal-extra";
 import { User } from "../../src/entity/User.js";
 import { userInfoCache } from "../../src/route/user.js";
+import { appConfig } from "../../src/util/app-config.js";
 import { openIdConfiguration } from "../../src/util/auth.js";
 import { em } from "../../src/util/mikro-orm.js";
 import { buildTeamMember } from "../setup/fixtures.js";
@@ -24,7 +26,7 @@ type UserDocument = {
 };
 
 type UserInfoClaims = {
-    displayName: string;
+    displayName: string | number;
     email?: string;
 };
 
@@ -176,6 +178,25 @@ describe("user", () => {
         const response = await showProfile(userToken);
 
         await expectJsonApiError(response, 403, "missing_profile_claim");
+    });
+
+    it("refuses a profile whose claim path throws, rather than erroring", async () => {
+        const original = appConfig.userInfo.displayNamePath;
+        // Compiles, and throws once the provider sends a number where the
+        // expression expects a string: join() takes strings only.
+        appConfig.userInfo.displayNamePath = compile("join(' ', [displayName])");
+        userInfoClaims.set("testuser", {
+            displayName: 42,
+            email: "thrown@example.test",
+        });
+
+        try {
+            const response = await showProfile(userToken);
+
+            await expectJsonApiError(response, 403, "missing_profile_claim");
+        } finally {
+            appConfig.userInfo.displayNamePath = original;
+        }
     });
 
     // highestRole reads "admin" for the claim as well as for the team role, so
