@@ -150,7 +150,7 @@ const fieldSpecsSchemaObject = (specs: Record<string, BuiltInFieldSpec>): Schema
                     label: { type: "string" },
                     helperText: { type: "string" },
                     forceRequired: { type: "boolean" },
-                    type: { type: "string", enum: [spec.type] },
+                    type: { type: "string", const: spec.type },
                     ...("imageDefaults" in spec
                         ? { imageDefaults: imageDefaultsSchemaObject }
                         : {}),
