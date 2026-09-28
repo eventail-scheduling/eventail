@@ -62,22 +62,45 @@ const claimedDisplayNameSchema = z.string().trim().min(1);
 const claimedEmailAddressSchema = z.email().toLowerCase();
 
 type JmesPathExpression = Parameters<typeof TreeInterpreter.search>[0];
+type UserInfoPathSetting = "displayNamePath" | "emailAddressPath";
+
+/**
+ * Answers nothing when the expression throws, so the claim counts as missing.
+ *
+ * A path can compile and still throw on what a provider sends, such as join()
+ * over a claim that is not a string. The person then sees the missing-claim
+ * refusal rather than a server error, and the log names the setting.
+ */
+const searchUserInfo = (
+    path: JmesPathExpression,
+    rawUserInfo: JSONValue,
+    setting: UserInfoPathSetting,
+): JSONValue | undefined => {
+    try {
+        return TreeInterpreter.search(path, rawUserInfo);
+    } catch (error) {
+        logger.error(`userInfo.${setting} threw, counting the claim as missing`, { error });
+        return undefined;
+    }
+};
 
 /**
  * Reads one configured claim, refusing with a code the web explains when it is missing or
  * unusable.
  */
 const resolveUserInfoField = (
-    path: JmesPathExpression | undefined,
+    setting: UserInfoPathSetting,
     schema: z.ZodType<string>,
     rawUserInfo: JSONValue,
     label: string,
 ): string | null => {
+    const path = appConfig.userInfo[setting];
+
     if (!path) {
         return null;
     }
 
-    const result = schema.safeParse(TreeInterpreter.search(path, rawUserInfo));
+    const result = schema.safeParse(searchUserInfo(path, rawUserInfo, setting));
 
     if (!result.success) {
         throw new JsonApiError({
@@ -96,13 +119,13 @@ const resolveUserInfoField = (
 
 const parseUserInfo = (rawUserInfo: JSONValue): UserInfo => ({
     displayName: resolveUserInfoField(
-        appConfig.userInfo.displayNamePath,
+        "displayNamePath",
         claimedDisplayNameSchema,
         rawUserInfo,
         "display name",
     ),
     emailAddress: resolveUserInfoField(
-        appConfig.userInfo.emailAddressPath,
+        "emailAddressPath",
         claimedEmailAddressSchema,
         rawUserInfo,
         "email address",
