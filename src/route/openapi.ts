@@ -1,4 +1,4 @@
-import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
 import { buildDataResponseObject, buildResourceSchemaObject } from "@jsonapi-serde/openapi";
 import { htmlResponse, type JsonSerializable, jsonResponse } from "@taxum/core/http";
 import { m, type Router } from "@taxum/core/routing";
@@ -24,7 +24,7 @@ import { addOpenapiTeamPaths } from "./teams.js";
 import { addOpenapiCurrentUserPaths } from "./user.js";
 import { addOpenapiUserPurgePaths } from "./user-purges.js";
 
-const { version } = createRequire(import.meta.url)("../../package.json") as { version: string };
+const { version } = JSON.parse(readFileSync("package.json", "utf8")) as { version: string };
 
 const timezoneResourceSchema = buildResourceSchemaObject({
     type: "timezone",
