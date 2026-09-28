@@ -144,9 +144,8 @@ const pickBranch = (schema: Schema, resource: Resource): Schema => {
 
     const match = branches.find((branch) => {
         const properties = branch.properties as Record<string, Schema> | undefined;
-        const allowed = properties?.type?.enum as string[] | undefined;
 
-        return allowed?.includes(resource.type as string) === true;
+        return resource.type !== undefined && properties?.type?.const === resource.type;
     });
 
     return match ?? schema;
