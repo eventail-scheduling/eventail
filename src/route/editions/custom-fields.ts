@@ -566,7 +566,7 @@ export const customFieldsRouter = new Router()
 export const addOpenapiCustomFieldPaths = (builder: OpenApiBuilder): void => {
     builder.addPath("/editions/{editionId}/custom-fields", {
         get: {
-            tags: ["CustomFields"],
+            tags: ["Custom Fields"],
             summary: "List custom fields",
             description:
                 "Lists the custom fields of an edition. Open to any authenticated subject." +
@@ -585,7 +585,7 @@ export const addOpenapiCustomFieldPaths = (builder: OpenApiBuilder): void => {
             },
         },
         post: {
-            tags: ["CustomFields"],
+            tags: ["Custom Fields"],
             summary: "Create a custom field",
             description:
                 "Creates a custom field in an edition. The referenced session types and tracks must" +
@@ -623,7 +623,7 @@ export const addOpenapiCustomFieldPaths = (builder: OpenApiBuilder): void => {
 
     builder.addPath("/editions/{editionId}/relationships/custom-fields", {
         patch: {
-            tags: ["CustomFields"],
+            tags: ["Custom Fields"],
             summary: "Reorder custom fields",
             description:
                 "Sets the order of the custom fields of an edition. The list must name every" +
@@ -650,7 +650,7 @@ export const addOpenapiCustomFieldPaths = (builder: OpenApiBuilder): void => {
 
     builder.addPath("/editions/{editionId}/custom-fields/{customFieldId}", {
         get: {
-            tags: ["CustomFields"],
+            tags: ["Custom Fields"],
             summary: "Show a custom field",
             description:
                 "Retrieves a single custom field of an edition. Open to any authenticated" +
@@ -673,7 +673,7 @@ export const addOpenapiCustomFieldPaths = (builder: OpenApiBuilder): void => {
             },
         },
         patch: {
-            tags: ["CustomFields"],
+            tags: ["Custom Fields"],
             summary: "Update a custom field",
             description:
                 "Updates a custom field of an edition. The target and the option type are immutable" +
@@ -714,7 +714,7 @@ export const addOpenapiCustomFieldPaths = (builder: OpenApiBuilder): void => {
             },
         },
         delete: {
-            tags: ["CustomFields"],
+            tags: ["Custom Fields"],
             summary: "Delete a custom field",
             description:
                 "Deletes a custom field of an edition together with its responses. Requires the" +
