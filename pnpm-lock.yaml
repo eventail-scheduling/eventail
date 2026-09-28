@@ -182,8 +182,8 @@ importers:
         specifier: ^1.4.7
         version: 1.4.7(@jsonapi-serde/server@1.10.3(zod@4.6.5))(@taxum/core@1.3.1)
       '@jsonapi-serde/openapi':
-        specifier: ^1.7.2
-        version: 1.7.2(@jsonapi-serde/server@1.10.3(zod@4.6.5))(openapi3-ts@4.6.1)(zod@4.6.5)
+        specifier: ^1.7.3
+        version: 1.7.3(@jsonapi-serde/server@1.10.3(zod@4.6.5))(openapi3-ts@4.6.1)(zod@4.6.5)
       '@jsonapi-serde/server':
         specifier: ^1.10.3
         version: 1.10.3(zod@4.6.5)
@@ -906,8 +906,8 @@ packages:
       '@jsonapi-serde/server': ^1.10.3
       '@taxum/core': ^1.0.0
 
-  '@jsonapi-serde/openapi@1.7.2':
-    resolution: {integrity: sha512-vlc1yVQECoPR//avJSTPPevoQYktkLWBBruHXgGhd+xpkf49/lmU1/h0Fs59DBbuAGqBZZ2/c++0g4V1fQgevw==}
+  '@jsonapi-serde/openapi@1.7.3':
+    resolution: {integrity: sha512-6oAvcTZOIoGoWeueQ/m22NltPLohFQalWaCR8x9GU8X+hcO2LTYLw8PAHFqVzFrNBfR6f2bx41h4vOFl9TD+Cg==}
     peerDependencies:
       '@jsonapi-serde/server': 1.10.3
       openapi3-ts: ^4.4.0
@@ -2493,7 +2493,7 @@ snapshots:
       '@jsonapi-serde/server': 1.10.3(zod@4.6.5)
       '@taxum/core': 1.3.1
 
-  '@jsonapi-serde/openapi@1.7.2(@jsonapi-serde/server@1.10.3(zod@4.6.5))(openapi3-ts@4.6.1)(zod@4.6.5)':
+  '@jsonapi-serde/openapi@1.7.3(@jsonapi-serde/server@1.10.3(zod@4.6.5))(openapi3-ts@4.6.1)(zod@4.6.5)':
     dependencies:
       '@jsonapi-serde/server': 1.10.3(zod@4.6.5)
       openapi3-ts: 4.6.1

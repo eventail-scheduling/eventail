@@ -162,7 +162,7 @@ const customFieldAttributesSchemaObject: SchemaObject = {
                     title: "Number",
                     type: "object",
                     properties: {
-                        type: { type: "string", enum: ["number"] },
+                        type: { type: "string", const: "number" },
                         min: { type: "integer", minimum: 0 },
                         max: { type: "integer", minimum: 0 },
                     },
