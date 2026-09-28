@@ -28,6 +28,8 @@ database once per run; each test worker clones it on demand.
 - `docker compose up -d postgres-test oidc s3 s3-init`
 - `pnpm test`
 
+Tests log fatal errors only; `LOG_LEVEL=debug pnpm test` shows everything.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
