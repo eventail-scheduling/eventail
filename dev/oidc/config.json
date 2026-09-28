@@ -1,0 +1,78 @@
+{
+  "interactiveLogin": true,
+  "loginPagePath": "/tmp/config/login.html",
+  "httpServer": "NettyWrapper",
+  "rotateRefreshToken": true,
+  "tokenCallbacks": [
+    {
+      "issuerId": "default",
+      "tokenExpiry": 86400,
+      "requestMappings": [
+        {
+          "requestParam": "code",
+          "match": "integration",
+          "claims": {
+            "sub": "integration",
+            "aud": "eventail"
+          }
+        },
+        {
+          "requestParam": "client_id",
+          "match": "testuser",
+          "claims": {
+            "sub": "testuser",
+            "aud": "eventail"
+          }
+        },
+        {
+          "requestParam": "client_id",
+          "match": "testhost",
+          "claims": {
+            "sub": "testhost",
+            "aud": "eventail"
+          }
+        },
+        {
+          "requestParam": "client_id",
+          "match": "integration",
+          "claims": {
+            "sub": "integration",
+            "aud": "eventail"
+          }
+        },
+        {
+          "requestParam": "client_id",
+          "match": "admin",
+          "claims": {
+            "sub": "admin",
+            "aud": "eventail"
+          }
+        },
+        {
+          "requestParam": "client_id",
+          "match": "stranger",
+          "claims": {
+            "sub": "stranger",
+            "aud": "eventail"
+          }
+        },
+        {
+          "requestParam": "client_id",
+          "match": "speaker",
+          "claims": {
+            "sub": "speaker",
+            "aud": "eventail"
+          }
+        },
+        {
+          "requestParam": "client_id",
+          "match": "reviewer",
+          "claims": {
+            "sub": "reviewer",
+            "aud": "eventail"
+          }
+        }
+      ]
+    }
+  ]
+}

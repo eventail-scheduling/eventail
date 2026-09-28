@@ -1,0 +1,13 @@
+<p>Hello {{ hostName }},</p>
+
+<p>Thank you for submitting "{{ sessionTitle }}" to {{ editionName }}.</p>
+
+<p>Unfortunately we were not able to include your session this time. We hope to see another submission from you in the future.</p>
+{%- if note != "" %}
+
+<p>A note from the organizers:</p>
+
+<p>{{ note | escape | newline_to_br | raw }}</p>
+{%- endif %}
+
+<p><a href="{{ sessionUrl }}">View your session</a></p>
