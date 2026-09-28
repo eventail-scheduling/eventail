@@ -15,8 +15,8 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
   `style` or `test`.
 - **Scope:** optional, and one of `auth`, `custom-fields`, `editions`, `invites`, `jobs`,
   `locations`, `openapi`, `schedules`, `session-types`, `sessions`, `teams`, `tracks`, `users`,
-  `webhooks`, `deps`, `deps-dev`. Leave it out when a change spans several areas. `deps` and
-  `deps-dev` are for dependency updates.
+  `deps`, `deps-dev`. Leave it out when a change spans several areas. `deps` and `deps-dev` are
+  for dependency updates.
 - **Body:** lines of at most 100 characters. Say why the change is made; the diff shows what
   changed.
 

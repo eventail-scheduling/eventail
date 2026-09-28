@@ -358,7 +358,7 @@ export const addOpenapiSessionTypePaths = (builder: OpenApiBuilder): void => {
 
     builder.addPath("/editions/{editionId}/session-types/{sessionTypeId}", {
         get: {
-            tags: ["SessionTypes"],
+            tags: ["Session Types"],
             summary: "Show a session type",
             description:
                 "Retrieves a single session type of an edition. Open to any authenticated" +
