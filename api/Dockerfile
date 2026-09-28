@@ -21,6 +21,7 @@ COPY --from=build /app/dist /app
 COPY config /app/config
 COPY email-templates /app/email-templates
 ENV NODE_ENV="production"
+USER 1000:1000
 
 ENTRYPOINT [ "node", "--enable-source-maps", "--import=./register-crash-logger.js" ]
 CMD [ "./index.js" ]
