@@ -18,7 +18,6 @@ module.exports = {
                 "teams",
                 "tracks",
                 "users",
-                "webhooks",
                 // Dependabot emits these two when commit-message.include is
                 // set to "scope".
                 "deps",
