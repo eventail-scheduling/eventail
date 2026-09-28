@@ -1,0 +1,25 @@
+{
+    "extends": [
+        "@tsconfig/vite-react/tsconfig.json"
+    ],
+    "compilerOptions": {
+        "noUncheckedSideEffectImports": true,
+        "lib": [
+            "ES2023",
+            "DOM",
+            "DOM.Iterable",
+            "ESNext.Temporal",
+            "ESNext.Intl",
+            "ESNext.Date"
+        ],
+        "types": [],
+        "paths": {
+            "#/*": [
+                "./src/*"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

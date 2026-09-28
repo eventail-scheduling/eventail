@@ -1,0 +1,9 @@
+.git
+.github
+.idea
+node_modules
+dist
+test
+.tanstack
+.vitest-attachments
+stats.html
