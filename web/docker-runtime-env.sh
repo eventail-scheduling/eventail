@@ -1,3 +1,3 @@
 #!/bin/sh
 
-envsubst < /usr/share/nginx/html/runtime-env.js.tpl > /usr/share/nginx/html/runtime-env.js
+envsubst < /usr/share/nginx/html/runtime-env.js.tpl > /tmp/runtime-env.js

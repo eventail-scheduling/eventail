@@ -10,7 +10,7 @@ COPY index.html tsconfig.json vite.config.ts /app/
 COPY src /app/src
 RUN pnpm build
 
-FROM nginx:alpine
+FROM nginxinc/nginx-unprivileged:alpine
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 COPY ./public/runtime-env.js.tpl /usr/share/nginx/html/runtime-env.js.tpl
 COPY --chmod=755 ./docker-runtime-env.sh /docker-entrypoint.d/eventail-runtime-env.sh
