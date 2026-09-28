@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Mock OAuth2</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+<div class="container">
+    <div class="row mt-5 justify-content-md-center">
+        <div class="col-md-6">
+            <h4>Mock OAuth2</h4>
+            <p class="text-muted">
+                Each button signs in as one of the subjects DevSeeder creates, so the account
+                already holds its team membership, sessions and answers.
+            </p>
+            <hr class="divisor">
+
+            <form method="post" class="mb-3">
+                <button type="submit" class="btn btn-primary" name="username" value="admin">
+                    Sign in as "Dev Admin"
+                </button>
+                <span class="text-muted ml-2">superadmin, every edition</span>
+                <input type="hidden" name="claims" value="{&quot;email&quot;:&quot;admin@example.test&quot;,&quot;displayName&quot;:&quot;Dev Admin&quot;,&quot;aud&quot;:&quot;eventail&quot;}" />
+            </form>
+
+            <form method="post" class="mb-3">
+                <button type="submit" class="btn btn-primary" name="username" value="testuser">
+                    Sign in as "Dev Manager"
+                </button>
+                <span class="text-muted ml-2">manager on the organizer team</span>
+                <input type="hidden" name="claims" value="{&quot;email&quot;:&quot;manager@example.test&quot;,&quot;displayName&quot;:&quot;Dev Manager&quot;,&quot;aud&quot;:&quot;eventail&quot;}" />
+            </form>
+
+            <form method="post" class="mb-3">
+                <button type="submit" class="btn btn-primary" name="username" value="testhost">
+                    Sign in as "Dev Host"
+                </button>
+                <span class="text-muted ml-2">hosts the seeded sessions</span>
+                <input type="hidden" name="claims" value="{&quot;email&quot;:&quot;host@example.test&quot;,&quot;displayName&quot;:&quot;Dev Host&quot;,&quot;aud&quot;:&quot;eventail&quot;}" />
+            </form>
+
+            <form method="post" class="mb-3">
+                <button type="submit" class="btn btn-primary" name="username" value="speaker">
+                    Sign in as "Dev Speaker"
+                </button>
+                <span class="text-muted ml-2">co-hosts them, submits its own</span>
+                <input type="hidden" name="claims" value="{&quot;email&quot;:&quot;speaker@example.test&quot;,&quot;displayName&quot;:&quot;Dev Speaker&quot;,&quot;aud&quot;:&quot;eventail&quot;}" />
+            </form>
+
+            <form method="post" class="mb-3">
+                <button type="submit" class="btn btn-primary" name="username" value="reviewer">
+                    Sign in as "Dev Reviewer"
+                </button>
+                <span class="text-muted ml-2">viewer, reads without writing</span>
+                <input type="hidden" name="claims" value="{&quot;email&quot;:&quot;reviewer@example.test&quot;,&quot;displayName&quot;:&quot;Dev Reviewer&quot;,&quot;aud&quot;:&quot;eventail&quot;}" />
+            </form>
+
+            <form method="post" class="mb-3">
+                <button type="submit" class="btn btn-secondary" name="username" value="stranger">
+                    Sign in as "Stranger"
+                </button>
+                <span class="text-muted ml-2">no team, no sessions</span>
+                <input type="hidden" name="claims" value="{&quot;email&quot;:&quot;stranger@example.test&quot;,&quot;displayName&quot;:&quot;Stranger&quot;,&quot;aud&quot;:&quot;eventail&quot;}" />
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
