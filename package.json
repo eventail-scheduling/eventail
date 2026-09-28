@@ -65,7 +65,7 @@
    },
    "scripts": {
       "start": "tsx watch --import=./src/register-crash-logger.ts ./src/index.ts",
-      "test": "tsx --test --test-global-setup=./test/setup/global-setup.mjs --import=./test/setup/worker-db.ts 'test/**/*.test.ts'",
+      "test": "tsx --test --test-global-setup=./test/setup/global-setup.mjs --import=./test/setup/log-level.ts --import=./test/setup/worker-db.ts 'test/**/*.test.ts'",
       "mikro-orm": "tsx ./node_modules/@mikro-orm/cli/cli",
       "typecheck": "tsc --noEmit && tsc -p tsconfig.build.json --noEmit",
       "build": "tsc -p tsconfig.build.json",
