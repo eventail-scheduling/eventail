@@ -3,6 +3,7 @@ import { buildDataResponseObject, buildResourceSchemaObject } from "@jsonapi-ser
 import { htmlResponse, type JsonSerializable, jsonResponse } from "@taxum/core/http";
 import { m, type Router } from "@taxum/core/routing";
 import { OpenApiBuilder } from "openapi3-ts/oas31";
+import { z } from "zod";
 import { addOpenapiClockPaths } from "./clock.js";
 import { addOpenapiCustomFieldPaths } from "./editions/custom-fields.js";
 import { addOpenapiHostPaths } from "./editions/hosts.js";
@@ -24,7 +25,9 @@ import { addOpenapiTeamPaths } from "./teams.js";
 import { addOpenapiCurrentUserPaths } from "./user.js";
 import { addOpenapiUserPurgePaths } from "./user-purges.js";
 
-const { version } = JSON.parse(readFileSync("package.json", "utf8")) as { version: string };
+const { version } = z
+    .object({ version: z.string() })
+    .parse(JSON.parse(readFileSync("package.json", "utf8")));
 
 const timezoneResourceSchema = buildResourceSchemaObject({
     type: "timezone",
