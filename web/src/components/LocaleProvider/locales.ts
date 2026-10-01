@@ -1,0 +1,40 @@
+// Region subtags are mandatory: a bare language resolves to one country's
+// conventions, so "es" would give every Latin American user Spanish separators
+// and a 24 hour clock.
+export const locales = [
+    "ar-EG",
+    "cs-CZ",
+    "da-DK",
+    "de-AT",
+    "de-CH",
+    "de-DE",
+    "el-GR",
+    "en-AU",
+    "en-CA",
+    "en-GB",
+    "en-US",
+    "es-ES",
+    "es-MX",
+    "fi-FI",
+    "fr-CA",
+    "fr-FR",
+    "he-IL",
+    "hi-IN",
+    "it-IT",
+    "ja-JP",
+    "ko-KR",
+    "nb-NO",
+    "nl-NL",
+    "pl-PL",
+    "pt-BR",
+    "pt-PT",
+    "ru-RU",
+    "sv-SE",
+    "th-TH",
+    "tr-TR",
+    "vi-VN",
+    "zh-CN",
+    "zh-TW",
+] as const;
+
+export type Locale = (typeof locales)[number];

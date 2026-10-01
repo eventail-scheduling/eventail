@@ -1,0 +1,21 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "lib": [
+            "ES2023",
+            "ES2024.Promise",
+            "DOM",
+            "DOM.Iterable",
+            "ESNext.Temporal",
+            "ESNext.Intl",
+            "ESNext.Date"
+        ],
+        "types": [
+            "@vitest/browser-playwright"
+        ]
+    },
+    "include": [
+        "test/**/*",
+        "src/**/*"
+    ]
+}

@@ -1,0 +1,7 @@
+/.tanstack
+/dist
+/node_modules
+/stats.html
+/test/**/__screenshots__
+/.vitest-attachments
+/.vitest

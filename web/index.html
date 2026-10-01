@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Eventail</title>
+        <style>
+            /* Painted before the app loads, so it only follows the system
+               preference; the app applies a stored choice once it starts. */
+            body { background-color: #fff; }
+
+            @media (prefers-color-scheme: dark) {
+                body { background-color: #121212; }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script vite-ignore src="/runtime-env.js"></script>
+        <script type="module" src="/src/entry.ts"></script>
+    </body>
+</html>
