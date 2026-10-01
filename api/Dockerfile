@@ -26,7 +26,6 @@ WORKDIR /app
 COPY --from=prod-deps /out/node_modules /app/node_modules
 COPY --from=build /app/api/dist /app
 COPY api/package.json /app/package.json
-COPY api/config /app/config
 COPY api/email-templates /app/email-templates
 ENV NODE_ENV="production"
 USER 1000:1000
