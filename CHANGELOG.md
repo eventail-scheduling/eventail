@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/eventail-scheduling/eventail-api/compare/v0.1.2...v0.1.3) (2026-10-01)
+
+
+### Bug Fixes
+
+* **openapi:** parse the version rather than casting it ([#19](https://github.com/eventail-scheduling/eventail-api/issues/19)) ([e498605](https://github.com/eventail-scheduling/eventail-api/commit/e4986057ce678aee8d7c501eb87bf5c03a9ba8fe))
+
 ## [0.1.2](https://github.com/eventail-scheduling/eventail-api/compare/v0.1.1...v0.1.2) (2026-09-28)
 
 
