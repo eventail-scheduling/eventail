@@ -1,3 +1,5 @@
+name: eventail-dev
+
 services:
   postgres:
     image: postgres:17
@@ -42,7 +44,7 @@ services:
       - SERVER_PORT=12003
       - JSON_CONFIG_PATH=/tmp/config/config.json
     volumes:
-      - ./dev/oidc:/tmp/config:ro
+      - ./api/dev/oidc:/tmp/config:ro
     healthcheck:
       # The mock server rejects HEAD, so no wget --spider here.
       test:

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+tsconfig.tsbuildinfo
+stats.html
+.tanstack/
+.vitest/
+.vitest-attachments/
+
+/api/openapi.json
+/api/config.schema.json
+
+# The ignore and its negation have to stay anchored together.
+/api/src/migration/.snapshot-*.json
+!/api/src/migration/.snapshot-dev.json
+
+/web/test/**/__screenshots__

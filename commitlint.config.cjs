@@ -11,6 +11,7 @@ module.exports = {
                 "invites",
                 "jobs",
                 "locations",
+                "openapi",
                 "schedules",
                 "session-types",
                 "sessions",

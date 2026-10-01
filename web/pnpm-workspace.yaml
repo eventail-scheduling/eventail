@@ -1,7 +1,0 @@
-sideEffectsCache: false
-allowBuilds:
-  '@axa-fr/oidc-client': true
-  '@axa-fr/react-oidc': true
-  lefthook: true
-minimumReleaseAgeExclude:
-  - '@jsonapi-serde/client@1.3.0'

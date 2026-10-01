@@ -1,0 +1,14 @@
+# Both image builds use the repo root as context, so these need to match at
+# every level rather than only at the root.
+.git
+.github
+.idea
+**/node_modules
+**/dist
+**/.tanstack
+**/.vitest-attachments
+**/stats.html
+api/test
+web/test
+api/config/local.*
+api/config/local-*

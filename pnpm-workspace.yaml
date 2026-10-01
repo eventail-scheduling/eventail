@@ -1,9 +1,18 @@
+packages:
+  - api
+  - web
+
 sideEffectsCache: false
+
 allowBuilds:
+  '@axa-fr/oidc-client': true
+  '@axa-fr/react-oidc': true
   '@biomejs/biome': true
   esbuild: true
   lefthook: true
+
 minimumReleaseAgeExclude:
+  - '@jsonapi-serde/client@1.3.0'
   - '@jsonapi-serde/integration-taxum@1.4.7'
   - '@jsonapi-serde/openapi@1.7.2 || 1.7.3'
   - '@jsonapi-serde/server@1.10.3'

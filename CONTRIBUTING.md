@@ -14,20 +14,22 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 - **Type:** `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`,
   `style` or `test`.
 - **Scope:** optional, and one of `auth`, `custom-fields`, `editions`, `invites`, `jobs`,
-  `locations`, `schedules`, `session-types`, `sessions`, `teams`, `tracks`, `ui`, `users`,
-  `deps`, `deps-dev`. Leave it out when a change spans several areas. `deps` and `deps-dev` are
-  for dependency updates.
+  `locations`, `openapi`, `schedules`, `session-types`, `sessions`, `teams`, `tracks`, `ui`,
+  `users`, `deps`, `deps-dev`. Leave it out when a change spans several areas. `deps` and
+  `deps-dev` are for dependency updates.
 - **Body:** lines of at most 100 characters. Say why the change is made; the diff shows what
   changed.
 
 ## Pull requests
 
-Run `pnpm typecheck` and `pnpm test` before opening one.
+Run `pnpm typecheck` and `pnpm test` before opening one; the test services are listed in the
+README.
 
 ## Releases
 
 Versions and `CHANGELOG.md` come from the commit messages on `main`: release-please keeps a
-release pull request open, and merging it tags the release and publishes the container image.
+release pull request open, and merging it tags the release and publishes both container
+images.
 Leave the version and the changelog to it.
 
 ## License

@@ -76,8 +76,8 @@ jobs:
           git config user.name "${APP_SLUG}[bot]"
           git config user.email "${user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
 
-          cp ../openapi.json "docs/public/specs/v$minor.json"
-          cp ../config.schema.json "docs/public/config/v$minor.json"
+          cp ../api/openapi.json "docs/public/specs/v$minor.json"
+          cp ../api/config.schema.json "docs/public/config/v$minor.json"
           git add "docs/public/specs/v$minor.json" "docs/public/config/v$minor.json"
 
           if git diff --cached --quiet; then

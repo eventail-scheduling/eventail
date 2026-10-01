@@ -5,9 +5,13 @@
         "includes": [
             "./biome.json",
             "./commitlint.config.cjs",
-            "./src/**/*",
-            "./test/**/*",
-            "!src/migration/.snapshot-*.json"
+            "./api/src/**/*",
+            "./api/test/**/*",
+            "!api/src/migration/.snapshot-*.json",
+            "./web/src/**/*",
+            "./web/test/**/*",
+            "!web/src/routeTree.gen.ts",
+            "!web/src/assets"
         ]
     },
     "linter": {
