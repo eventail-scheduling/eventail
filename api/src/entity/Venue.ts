@@ -31,14 +31,14 @@ export class Venue {
 
     public constructor(values: {
         name: string;
-        address: string | null | undefined;
-        externalKey: string | null | undefined;
+        address: string | null;
+        externalKey: string | null;
         position: number;
         edition: Ref<Edition>;
     }) {
         this.name = values.name;
-        this.address = values.address ?? null;
-        this.externalKey = values.externalKey ?? null;
+        this.address = values.address;
+        this.externalKey = values.externalKey;
         this.position = values.position;
         this.edition = values.edition;
     }

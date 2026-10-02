@@ -44,14 +44,14 @@ export class SessionType {
 
     public constructor(values: {
         name: string;
-        externalKey: string | null | undefined;
+        externalKey: string | null;
         defaultDuration: Temporal.Duration;
         internal: boolean;
         selectionDefault: boolean;
         edition: Ref<Edition>;
     }) {
         this.name = values.name;
-        this.externalKey = values.externalKey ?? null;
+        this.externalKey = values.externalKey;
         this.defaultDuration = values.defaultDuration;
         this.internal = values.internal;
         this.selectionDefault = values.selectionDefault;

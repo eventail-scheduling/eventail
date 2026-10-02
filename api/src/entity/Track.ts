@@ -30,14 +30,14 @@ export class Track {
 
     public constructor(values: {
         name: string;
-        externalKey: string | null | undefined;
+        externalKey: string | null;
         description: string;
         color: string;
         internal: boolean;
         edition: Ref<Edition>;
     }) {
         this.name = values.name;
-        this.externalKey = values.externalKey ?? null;
+        this.externalKey = values.externalKey;
         this.description = values.description;
         this.color = values.color;
         this.internal = values.internal;

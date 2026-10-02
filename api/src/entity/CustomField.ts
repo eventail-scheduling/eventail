@@ -82,26 +82,26 @@ export class CustomField {
     public readonly tracks = new Collection<Track>(this);
 
     public constructor(values: {
-        externalKey: string | null | undefined;
+        externalKey: string | null;
         target: CustomFieldTarget;
         requirement: CustomFieldRequirement;
         options: CustomFieldOptions;
         title: string;
         helperText: string;
-        deadline: Temporal.Instant | null | undefined;
-        freezeAfter: Temporal.Instant | null | undefined;
+        deadline: Temporal.Instant | null;
+        freezeAfter: Temporal.Instant | null;
         confidential?: boolean;
         position: number;
         edition: Ref<Edition>;
     }) {
-        this.externalKey = values.externalKey ?? null;
+        this.externalKey = values.externalKey;
         this.target = values.target;
         this.requirement = values.requirement;
         this.options = values.options;
         this.title = values.title;
         this.helperText = values.helperText;
-        this.deadline = values.deadline ?? null;
-        this.freezeAfter = values.freezeAfter ?? null;
+        this.deadline = values.deadline;
+        this.freezeAfter = values.freezeAfter;
         this.confidential = values.confidential ?? false;
         this.position = values.position;
         this.edition = values.edition;

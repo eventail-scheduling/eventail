@@ -50,13 +50,13 @@ export class Location {
 
     public constructor(values: {
         name: string;
-        externalKey: string | null | undefined;
+        externalKey: string | null;
         position: number;
         edition: Ref<Edition>;
         venue: Ref<Venue>;
     }) {
         this.name = values.name;
-        this.externalKey = values.externalKey ?? null;
+        this.externalKey = values.externalKey;
         this.position = values.position;
         this.edition = values.edition;
         this.venue = values.venue;
