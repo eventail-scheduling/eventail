@@ -198,7 +198,7 @@ importers:
         version: 1.3.0
       '@jsonapi-serde/integration-taxum':
         specifier: ^1.4.7
-        version: 1.4.7(@jsonapi-serde/server@1.10.3(zod@4.6.5))(@taxum/core@1.3.1)
+        version: 1.4.7(@jsonapi-serde/server@1.10.3(zod@4.6.5))(@taxum/core@1.3.2)
       '@jsonapi-serde/openapi':
         specifier: ^1.7.3
         version: 1.7.3(@jsonapi-serde/server@1.10.3(zod@4.6.5))(openapi3-ts@4.6.1)(zod@4.6.5)
@@ -224,11 +224,11 @@ importers:
         specifier: ^7.2.1
         version: 7.2.3(@mikro-orm/core@7.2.3)
       '@taxum/core':
-        specifier: ^1.3.1
-        version: 1.3.1
+        specifier: ^1.3.2
+        version: 1.3.2
       '@taxum/jwt':
-        specifier: ^1.1.7
-        version: 1.1.7(jose@6.2.12)
+        specifier: ^1.1.8
+        version: 1.1.8(jose@6.2.12)
       cacheable:
         specifier: ^2.5.0
         version: 2.5.0
@@ -294,8 +294,8 @@ importers:
         version: 2.2.1(zod@4.6.5)
     devDependencies:
       '@taxum/testing':
-        specifier: ^1.0.1
-        version: 1.0.1(@taxum/core@1.3.1)
+        specifier: ^1.0.2
+        version: 1.0.2(@taxum/core@1.3.2)
       '@tsconfig/node26':
         specifier: ^26.0.1
         version: 26.0.1
@@ -1780,18 +1780,18 @@ packages:
     resolution: {integrity: sha512-uhOeFyxLcU41HzvrxsGpiWdcMbScY1EDgbZ5K7DVRMYInbLYWAC0EA/kx9wXAoSM8q82bUG2hRl8+EAjE6XAbA==}
     engines: {node: '>=20.19'}
 
-  '@taxum/core@1.3.1':
-    resolution: {integrity: sha512-Xq48+nyqLiwccfdNq9IrLwWqIwqP6FD/TRcvVTQlwWQpbDFjZEIaU8TU6SGYT48q77YaMYXAp+yxKIO7M2Yhhw==}
+  '@taxum/core@1.3.2':
+    resolution: {integrity: sha512-1AkqroXnPBnAqFqWBb5RVwif044beKk0S74yUe2SezVLOFM/0KjxHB73BJncbFTyWUgCP1t4yuBYiD2iUqR1lg==}
 
-  '@taxum/jwt@1.1.7':
-    resolution: {integrity: sha512-V7JLi3ymiYXqiC+tOHZftnpyG4/v2A/pP/dkkhHAWagZKn/1S/cUY5BDx0paHYNEQpbVpONjw9do+/wYaAN+WA==}
+  '@taxum/jwt@1.1.8':
+    resolution: {integrity: sha512-gkurSx0AarmISDoUOMHdrtactLibjLS6WhtPS374Oaz9Cp8SbsJIpP3FRoUJIHrTicbWpOU+X9BbxO/WVZmS+g==}
     peerDependencies:
       jose: ^6.0.12
 
-  '@taxum/testing@1.0.1':
-    resolution: {integrity: sha512-tjf1QMqc/3qBHEFfOuQPjr75wa5YOKv/px8HnDajvV0MGbej6/LFh08Ulk3RqV0rODwMU28tMS0Hx8lEdVAbFw==}
+  '@taxum/testing@1.0.2':
+    resolution: {integrity: sha512-OwTqR5w404hTgeymdGRcrq6lZ9y7QE9X0knmcfL48T9Ei8iNcw91aQ4RMefffSrXzbSOASPBVMWvtryQZE8wiA==}
     peerDependencies:
-      '@taxum/core': ^1.3.1
+      '@taxum/core': ^1.3.2
 
   '@tsconfig/node26@26.0.1':
     resolution: {integrity: sha512-NQT8JUFDKeAIWpR1dakeF534msQAsoSLr1WpKdRDt3sCvk2fsFK3EVKUBG5xKYVamiRO6yTfniiyvCaqOGgn/g==}
@@ -4387,10 +4387,10 @@ snapshots:
     dependencies:
       zod: 4.6.5
 
-  '@jsonapi-serde/integration-taxum@1.4.7(@jsonapi-serde/server@1.10.3(zod@4.6.5))(@taxum/core@1.3.1)':
+  '@jsonapi-serde/integration-taxum@1.4.7(@jsonapi-serde/server@1.10.3(zod@4.6.5))(@taxum/core@1.3.2)':
     dependencies:
       '@jsonapi-serde/server': 1.10.3(zod@4.6.5)
-      '@taxum/core': 1.3.1
+      '@taxum/core': 1.3.2
 
   '@jsonapi-serde/openapi@1.7.3(@jsonapi-serde/server@1.10.3(zod@4.6.5))(openapi3-ts@4.6.1)(zod@4.6.5)':
     dependencies:
@@ -4757,21 +4757,21 @@ snapshots:
 
   '@tanstack/virtual-file-routes@1.162.0': {}
 
-  '@taxum/core@1.3.1':
+  '@taxum/core@1.3.2':
     dependencies:
       '@standard-schema/spec': 1.1.0
       find-my-way: 9.9.0
       nested-search-params: 1.0.2
       ts-pattern: 5.9.0
 
-  '@taxum/jwt@1.1.7(jose@6.2.12)':
+  '@taxum/jwt@1.1.8(jose@6.2.12)':
     dependencies:
-      '@taxum/core': 1.3.1
+      '@taxum/core': 1.3.2
       jose: 6.2.12
 
-  '@taxum/testing@1.0.1(@taxum/core@1.3.1)':
+  '@taxum/testing@1.0.2(@taxum/core@1.3.2)':
     dependencies:
-      '@taxum/core': 1.3.1
+      '@taxum/core': 1.3.2
       set-cookie-parser: 3.1.2
 
   '@tsconfig/node26@26.0.1': {}
