@@ -33,6 +33,7 @@ const Root = (): ReactNode => {
     const { edition } = useSuspenseQuery(qof.edition.get(editionId)).data;
     const currentUser = useSuspenseQuery(qof.user.getCurrentUser()).data;
     const locations = useSuspenseQuery(qof.location.list(editionId)).data;
+    const venues = useSuspenseQuery(qof.venue.list(editionId)).data;
     const draft = useSuspenseQuery(qof.schedule.latest(editionId)).data;
     const schedules = useSuspenseQuery(qof.schedule.list(editionId)).data;
     const publication = useSuspenseQuery(qof.schedule.current(editionId)).data;
@@ -58,6 +59,7 @@ const Root = (): ReactNode => {
                 axis={axis}
                 slots={draft.slots}
                 locations={locations}
+                venues={venues}
                 picker={<ShowingPicker editionId={editionId} showing={DRAFT} />}
             />
         );
@@ -70,6 +72,7 @@ const Root = (): ReactNode => {
             picker={<ShowingPicker editionId={editionId} showing={DRAFT} />}
             axis={axis}
             locations={locations}
+            venues={venues}
             draft={draft}
             schedules={schedules}
         />

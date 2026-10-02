@@ -1,3 +1,4 @@
+import ApartmentIcon from "@mui/icons-material/Apartment";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import CategoryIcon from "@mui/icons-material/Category";
 import DynamicFormIcon from "@mui/icons-material/DynamicForm";
@@ -161,6 +162,15 @@ export const DrawerContent = ({ edition }: DrawerContentProps): ReactNode => {
                                 <BarChartIcon />
                             </ListItemIcon>
                             <ListItemText>Tracks</ListItemText>
+                        </ListItemButtonLink>
+                        <ListItemButtonLink
+                            to="/manage/$editionId/venues"
+                            params={{ editionId: edition.id }}
+                        >
+                            <ListItemIcon>
+                                <ApartmentIcon />
+                            </ListItemIcon>
+                            <ListItemText>Venues</ListItemText>
                         </ListItemButtonLink>
                         <ListItemButtonLink
                             to="/manage/$editionId/locations"

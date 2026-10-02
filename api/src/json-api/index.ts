@@ -19,6 +19,7 @@ import { teamInviteSerializer } from "./team-invite.js";
 import { teamInvitePreviewSerializer } from "./team-invite-preview.js";
 import { trackSerializer } from "./track.js";
 import { userSerializer } from "./user.js";
+import { venueSerializer } from "./venue.js";
 
 export const serialize = SerializeBuilder.new()
     .add("response", responseSerializer)
@@ -41,6 +42,7 @@ export const serialize = SerializeBuilder.new()
     .add("team_invite_preview", teamInvitePreviewSerializer)
     .add("track", trackSerializer)
     .add("user", userSerializer)
+    .add("venue", venueSerializer)
     .build();
 
 export type SerializeMap = InferSerializeMap<typeof serialize>;

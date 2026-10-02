@@ -9,8 +9,9 @@ import { Schedule } from "../../../src/entity/Schedule.js";
 import { SessionType } from "../../../src/entity/SessionType.js";
 import { Slot } from "../../../src/entity/Slot.js";
 import { User } from "../../../src/entity/User.js";
+import { Venue } from "../../../src/entity/Venue.js";
 import { em } from "../../../src/util/mikro-orm.js";
-import { buildEdition, buildSession, buildTeamMember } from "../../setup/fixtures.js";
+import { buildEdition, buildSession, buildTeamMember, buildVenue } from "../../setup/fixtures.js";
 import { expectJsonApiError, jsonApi, send } from "../../setup/json-api.js";
 import { releaseAfterLockWait } from "../../setup/locks.js";
 import { fetchAccessToken } from "../../setup/token.js";
@@ -28,7 +29,10 @@ type LocationDocument = {
         type: "location";
         id?: string;
         attributes: LocationAttributes;
-        relationships: { availabilities: { data: { type: string; lid: string }[] } };
+        relationships: {
+            venue: { data: { type: "venue"; id: string } };
+            availabilities: { data: { type: string; lid: string }[] };
+        };
     };
     included: AvailabilityBlock[];
 };
@@ -64,22 +68,6 @@ const block = (lid: string, startsAt: string, endsAt: string): AvailabilityBlock
     attributes: { startsAt, endsAt },
 });
 
-const locationDocument = ({
-    id,
-    attributes,
-    blocks = [],
-}: LocationDocumentValues): LocationDocument => ({
-    data: {
-        type: "location",
-        ...(id === undefined ? {} : { id }),
-        attributes,
-        relationships: {
-            availabilities: { data: blocks.map(({ type, lid }) => ({ type, lid })) },
-        },
-    },
-    included: blocks,
-});
-
 const includedTimes = (document: LocationResponseDocument): [string, string][] =>
     (document.included ?? [])
         .filter((resource) => resource.type === "location_availability")
@@ -91,6 +79,24 @@ describe("locations", () => {
     let editionId: string;
     let sessionTypeId: string;
     let locationId: string;
+    let venueId: string;
+
+    const locationDocument = ({
+        id,
+        attributes,
+        blocks = [],
+    }: LocationDocumentValues): LocationDocument => ({
+        data: {
+            type: "location",
+            ...(id === undefined ? {} : { id }),
+            attributes,
+            relationships: {
+                venue: { data: { type: "venue", id: venueId } },
+                availabilities: { data: blocks.map(({ type, lid }) => ({ type, lid })) },
+            },
+        },
+        included: blocks,
+    });
 
     before(async () => {
         [managerToken, hostToken] = await Promise.all([
@@ -110,18 +116,21 @@ describe("locations", () => {
 
         const edition = buildEdition({ name: "Location Edition" });
         const sessionType = SessionType.default(ref(edition));
+        const venue = buildVenue(edition);
         const location = new Location({
             position: 0,
             name: "Main Hall",
             externalKey: "main-hall",
             edition: ref(edition),
+            venue: ref(venue),
         });
 
-        await fork.persist([manager, team, host, edition, sessionType, location]).flush();
+        await fork.persist([manager, team, host, edition, sessionType, venue, location]).flush();
 
         editionId = edition.id;
         sessionTypeId = sessionType.id;
         locationId = location.id;
+        venueId = venue.id;
     });
 
     it("creates a location", async () => {
@@ -367,6 +376,81 @@ describe("locations", () => {
         assert.equal(listDocument.data[0].relationships?.availabilities, undefined);
     });
 
+    const foreignVenueDocument = (foreignVenueId: string, id?: string): unknown => ({
+        data: {
+            type: "location",
+            ...(id === undefined ? {} : { id }),
+            attributes: { name: "Elsewhere", externalKey: null },
+            relationships: {
+                venue: { data: { type: "venue", id: foreignVenueId } },
+                availabilities: { data: [] },
+            },
+        },
+    });
+
+    const buildForeignVenue = async (): Promise<string> => {
+        const fork = em.fork();
+        const otherEdition = buildEdition({ name: "Other Location Edition" });
+        const foreign = buildVenue(otherEdition, { externalKey: "foreign-venue" });
+        await fork.persist([otherEdition, foreign]).flush();
+
+        return foreign.id;
+    };
+
+    it("refuses a venue of another edition on create", async () => {
+        const response = await jsonApi.post(
+            `/editions/${editionId}/locations`,
+            managerToken,
+            foreignVenueDocument(await buildForeignVenue()),
+        );
+
+        assert.equal(response.status, 404);
+        assert.equal(await em.fork().count(Location, { edition: editionId }), 1);
+    });
+
+    it("refuses a venue of another edition on update", async () => {
+        const response = await jsonApi.patch(
+            `/editions/${editionId}/locations/${locationId}`,
+            managerToken,
+            foreignVenueDocument(await buildForeignVenue(), locationId),
+        );
+
+        assert.equal(response.status, 404);
+        const stored = await em.fork().findOneOrFail(Location, locationId);
+        assert.equal(stored.venue.id, venueId);
+    });
+
+    it("moves the revision when a location changes venue", async () => {
+        const fork = em.fork();
+        const edition = await fork.findOneOrFail(Edition, editionId);
+        const second = buildVenue(edition, { position: 1, externalKey: "second-venue" });
+        await fork.persist(second).flush();
+
+        const readRevision = async (): Promise<number> =>
+            (await em.fork().findOne(EditionRevision, { editionId }))?.revision ?? 0;
+        const before = await readRevision();
+
+        const response = await jsonApi.patch(
+            `/editions/${editionId}/locations/${locationId}`,
+            managerToken,
+            {
+                data: {
+                    type: "location",
+                    id: locationId,
+                    attributes: { name: "Main Hall", externalKey: "main-hall" },
+                    relationships: {
+                        venue: { data: { type: "venue", id: second.id } },
+                        availabilities: { data: [] },
+                    },
+                },
+            },
+        );
+
+        assert.equal(response.status, 200);
+        assert.equal(await readRevision(), before + 1);
+        assert.equal((await em.fork().findOneOrFail(Location, locationId)).venue.id, second.id);
+    });
+
     it("refuses to delete a location still used by a slot", async () => {
         const fork = em.fork();
         const edition = await fork.findOneOrFail(Edition, editionId);
@@ -376,6 +460,7 @@ describe("locations", () => {
             name: "Slotted Room",
             externalKey: null,
             edition: ref(edition),
+            venue: ref(fork.getReference(Venue, venueId)),
         });
         const schedule = new Schedule({ edition: ref(edition), sequence: 1 });
         const session = buildSession(edition, sessionType, { title: "Slotted Session" });
@@ -473,12 +558,14 @@ describe("locations", () => {
             name: "Second Room",
             externalKey: "second-room",
             edition: ref(edition),
+            venue: ref(fork.getReference(Venue, venueId)),
         });
         const third = new Location({
             position: 2,
             name: "Third Room",
             externalKey: "third-room",
             edition: ref(edition),
+            venue: ref(fork.getReference(Venue, venueId)),
         });
         await fork.persist([second, third]).flush();
 
@@ -513,6 +600,7 @@ describe("locations", () => {
             name: "Revision Room",
             externalKey: "revision-room",
             edition: ref(edition),
+            venue: ref(fork.getReference(Venue, venueId)),
         });
         await fork.persist(second).flush();
 

@@ -5,7 +5,7 @@ import type { Control } from "react-hook-form";
 import { z } from "zod/mini";
 import { RhfColorField } from "#/components/ColorField/index.js";
 import type { Track } from "#/queries/track.ts";
-import { externalKeySchema } from "#/utils/zod.js";
+import { emptyToNullSchema } from "#/utils/zod.js";
 
 const HEX_COLOR = /^#[0-9A-Fa-f]{6}$/;
 
@@ -13,7 +13,7 @@ const DEFAULT_COLOR = "#1976d2";
 
 export const trackFormSchema = z.object({
     name: z.string().check(z.trim(), z.minLength(1)),
-    externalKey: externalKeySchema,
+    externalKey: emptyToNullSchema,
     description: z.string().check(z.trim()),
     color: z.string().check(z.regex(HEX_COLOR, { error: "Must be a six digit hex color" })),
     internal: z.boolean(),

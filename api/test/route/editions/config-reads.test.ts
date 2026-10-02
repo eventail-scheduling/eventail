@@ -7,7 +7,7 @@ import { Location } from "../../../src/entity/Location.js";
 import { SessionType } from "../../../src/entity/SessionType.js";
 import { Track } from "../../../src/entity/Track.js";
 import { em } from "../../../src/util/mikro-orm.js";
-import { buildEdition, buildTeamMember } from "../../setup/fixtures.js";
+import { buildEdition, buildTeamMember, buildVenue } from "../../setup/fixtures.js";
 import { expectJsonApiError, jsonApi } from "../../setup/json-api.js";
 import { fetchAccessToken } from "../../setup/token.js";
 
@@ -43,11 +43,13 @@ describe("config reads", () => {
             teamName: "Config Managers",
         });
         const edition = buildEdition({ name: "Config Edition" });
+        const venue = buildVenue(edition);
         const location = new Location({
             position: 0,
             name: "Green Room",
             externalKey: null,
             edition: ref(edition),
+            venue: ref(venue),
         });
         // Internal marks where something belongs, not who may read it: a
         // rehearsal is real data a shift-scheduling consumer needs.

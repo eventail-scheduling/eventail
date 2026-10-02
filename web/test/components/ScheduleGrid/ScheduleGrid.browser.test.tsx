@@ -2,7 +2,7 @@ import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { type ReactNode, useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { userEvent } from "vitest/browser";
+import { page, userEvent } from "vitest/browser";
 import { render } from "vitest-browser-react";
 import { LocaleProvider } from "#/components/LocaleProvider/index.ts";
 import { collisionWarnings, findCollisions } from "#/components/ScheduleGrid/collision.ts";
@@ -17,6 +17,7 @@ import {
 import type { Location } from "#/queries/location.js";
 import type { Slot } from "#/queries/schedule.js";
 import type { SlottableSession } from "#/queries/session.js";
+import type { Venue } from "#/queries/venue.js";
 import type { AvailabilityInterval } from "#/utils/availability.ts";
 import { mouse, type Point, stopTouch, touch, wait } from "../../support/browser-input.ts";
 import { assertScrollable } from "../../support/scrolling.ts";
@@ -37,13 +38,43 @@ const axis = buildScheduleAxis(
     berlin,
 );
 
+const venueNamed = (id: string, name: string): Venue => ({
+    id,
+    name,
+    address: null,
+    externalKey: null,
+});
+
+const congress = venueNamed("venue-congress", "Congress Center");
+const annexVenue = venueNamed("venue-annex-house", "Annex House");
+
+/** Every room in one venue, which is what an edition looks like until a second is added. */
 const roomsWith = (mainAvailability: AvailabilityInterval[] = []): Location[] =>
     [
-        { id: "room-main", name: "Main hall", externalKey: null, availabilities: mainAvailability },
-        { id: "room-annex", name: "Annex", externalKey: null, availabilities: [] },
+        {
+            id: "room-main",
+            name: "Main hall",
+            externalKey: null,
+            venue: { id: congress.id },
+            availabilities: mainAvailability,
+        },
+        {
+            id: "room-annex",
+            name: "Annex",
+            externalKey: null,
+            venue: { id: congress.id },
+            availabilities: [],
+        },
     ] as unknown as Location[];
 
 const rooms = roomsWith();
+
+const roomsAcross = (): Location[] => [
+    { ...rooms[0], venue: { id: congress.id } },
+    { ...rooms[1], venue: { id: annexVenue.id } },
+];
+
+const twoVenues = [congress, annexVenue];
 
 type SlotAt = {
     id: string;
@@ -105,6 +136,7 @@ type EditorProps = {
     /** Only what a collision is read from; the sidebar is a button here. */
     sessions?: SlottableSession[];
     locations?: Location[];
+    venues?: readonly Venue[];
     step: MinuteStep;
     onPlace: (subject: DragSubject, candidate: Candidate) => void;
     onSelect: (slot: Slot) => void;
@@ -123,6 +155,7 @@ const Editor = ({
     sessions = [],
     step,
     locations = rooms,
+    venues = [congress],
     onPlace,
     onSelect,
     onRemove,
@@ -192,6 +225,7 @@ const Editor = ({
                 <ScheduleGrid
                     axis={axis}
                     locations={locations}
+                    venues={venues}
                     slots={slots}
                     step={step}
                     drag={controls.drag}
@@ -246,13 +280,14 @@ type Harness = {
 type MountOptions = {
     unavailable?: MinuteSpan[];
     locations?: Location[];
+    venues?: readonly Venue[];
     sessions?: SlottableSession[];
 };
 
 const mount = async (
     slots: Slot[],
     step: MinuteStep = 5,
-    { locations, sessions, unavailable }: MountOptions = {},
+    { locations, venues, sessions, unavailable }: MountOptions = {},
 ): Promise<Harness> => {
     const onPlace = vi.fn();
     const onSelect = vi.fn();
@@ -262,6 +297,7 @@ const mount = async (
             slots={slots}
             step={step}
             locations={locations}
+            venues={venues}
             sessions={sessions}
             unavailable={unavailable}
             onPlace={onPlace}
@@ -1150,5 +1186,31 @@ describe("carrying a block with a finger", () => {
 
         expect(harness.onSelect).toHaveBeenCalledTimes(1);
         expect((harness.onSelect.mock.lastCall as [Slot])[0].id).toEqual("slot-keynote");
+    });
+});
+
+/** The caption a column header draws under its room name, or null for none. */
+const captionUnder = async (roomName: string): Promise<string | null> => {
+    const room = await page.getByText(roomName).element();
+    const header = room.parentElement;
+
+    return header === null ? null : (header.textContent?.slice(roomName.length) ?? null);
+};
+
+describe("naming the venue a room sits in", () => {
+    // Which venue each room is in, not merely that both names are drawn: a map
+    // built the wrong way round still shows every name somewhere.
+    it("names it under each room once an edition has two", async () => {
+        await mount([], 5, { locations: roomsAcross(), venues: twoVenues });
+
+        expect(await captionUnder("Main hall")).toEqual("Congress Center");
+        expect(await captionUnder("Annex")).toEqual("Annex House");
+    });
+
+    it("says nothing when every room is in the same venue", async () => {
+        await mount([], 5, { locations: rooms, venues: [congress] });
+
+        await expect.element(page.getByText("Main hall")).toBeVisible();
+        expect(await captionUnder("Main hall")).toEqual("");
     });
 });

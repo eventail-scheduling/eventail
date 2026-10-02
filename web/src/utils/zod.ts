@@ -53,8 +53,8 @@ export const formRelationshipSchema = z.pipe(
     z.transform((value) => value.id),
 );
 
-/** An empty key is sent as null, since the API accepts a null one but not an empty one. */
-export const externalKeySchema = z.pipe(
+/** An empty field is sent as null, since the API accepts a null one but not an empty one. */
+export const emptyToNullSchema = z.pipe(
     z.string().check(z.trim()),
     z.transform((input) => (input === "" ? null : input)),
 );

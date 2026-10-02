@@ -5,7 +5,7 @@ import type { TestResponse } from "@taxum/testing";
 import { SessionType } from "../../../src/entity/SessionType.js";
 import { Track } from "../../../src/entity/Track.js";
 import { em } from "../../../src/util/mikro-orm.js";
-import { buildEdition, buildTeamMember } from "../../setup/fixtures.js";
+import { buildEdition, buildTeamMember, buildVenue } from "../../setup/fixtures.js";
 import { expectJsonApiError, jsonApi } from "../../setup/json-api.js";
 import { fetchAccessToken } from "../../setup/token.js";
 
@@ -26,6 +26,7 @@ describe("external keys", () => {
     let managerToken: string;
     let editionId: string;
     let otherEditionId: string;
+    let venueId: string;
     let sessionTypeId: string;
 
     const createTrack = (edition: string, name: string, externalKey: string | null) =>
@@ -124,7 +125,10 @@ describe("external keys", () => {
                     data: {
                         type: "location",
                         attributes: { name, externalKey },
-                        relationships: { availabilities: { data: [] } },
+                        relationships: {
+                            venue: { data: { type: "venue", id: venueId } },
+                            availabilities: { data: [] },
+                        },
                     },
                 }),
             update: (id, externalKey) =>
@@ -133,7 +137,28 @@ describe("external keys", () => {
                         type: "location",
                         id,
                         attributes: { name: "Patched", externalKey },
-                        relationships: { availabilities: { data: [] } },
+                        relationships: {
+                            venue: { data: { type: "venue", id: venueId } },
+                            availabilities: { data: [] },
+                        },
+                    },
+                }),
+        },
+        {
+            label: "venue",
+            create: (name, externalKey) =>
+                jsonApi.post(`/editions/${editionId}/venues`, managerToken, {
+                    data: {
+                        type: "venue",
+                        attributes: { name, address: null, externalKey },
+                    },
+                }),
+            update: (id, externalKey) =>
+                jsonApi.patch(`/editions/${editionId}/venues/${id}`, managerToken, {
+                    data: {
+                        type: "venue",
+                        id,
+                        attributes: { name: "Patched", address: null, externalKey },
                     },
                 }),
         },
@@ -162,12 +187,14 @@ describe("external keys", () => {
         const edition = buildEdition({ name: "Key Edition" });
         const otherEdition = buildEdition({ name: "Other Key Edition" });
         const sessionType = SessionType.default(ref(edition));
+        const venue = buildVenue(edition);
 
-        await fork.persist([manager, team, edition, otherEdition, sessionType]).flush();
+        await fork.persist([manager, team, edition, otherEdition, sessionType, venue]).flush();
 
         editionId = edition.id;
         otherEditionId = otherEdition.id;
         sessionTypeId = sessionType.id;
+        venueId = venue.id;
     });
 
     const idOf = async (response: TestResponse): Promise<string> => {

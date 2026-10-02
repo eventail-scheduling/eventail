@@ -54,6 +54,7 @@ import {
 } from "../../../json-api/session-type.js";
 import { slotResourceFields, slotResourceSchema } from "../../../json-api/slot.js";
 import { trackResourceFields, trackResourceSchema } from "../../../json-api/track.js";
+import { venueResourceFields, venueResourceSchema } from "../../../json-api/venue.js";
 import { findCurrentSchedule } from "../../../support/schedules.js";
 import { populateSessionRelations } from "../../../support/sessions.js";
 import {
@@ -103,6 +104,7 @@ const showQueryOptions = {
             edition: editionResourceFields,
             slot: slotResourceFields,
             location: locationResourceFields.filter((field) => field !== "availabilities"),
+            venue: venueResourceFields,
             session: sessionResourceFields,
             host: hostResourceFields.filter((field) => field !== "availabilities"),
             response: responseResourceFields,
@@ -114,6 +116,7 @@ const showQueryOptions = {
     include: {
         allowed: [
             "slots.location",
+            "slots.location.venue",
             "slots.session.responses.customField",
             "slots.session.hosts.responses.customField",
             "slots.session.track",
@@ -466,6 +469,7 @@ const scheduleReadResponses: ResponsesObject = {
             restrictedEditionResourceSchema,
             slotResourceSchema,
             locationResourceSchema,
+            venueResourceSchema,
             restrictedSessionResourceSchema,
             restrictedHostResourceSchema,
             responseResourceSchema,
@@ -507,7 +511,7 @@ export const addOpenapiScheduleReadPaths = (builder: OpenApiBuilder): void => {
             tags: ["Schedules"],
             summary: "Show the current schedule",
             description:
-                "Retrieves the most recent publication of an edition, preliminary or final. This is the route an integration reads. Requires the viewer role or an integration token; the latter sees slots for confirmed sessions only and is the only caller given a validator.\n\nThe document is a complete snapshot rather than a delta: anything absent from a fresh fetch is gone, and there is no tombstone saying so. Match slots against a previously held copy by `stableId`, since `id` changes on every publication, and everything else by `id`. The validator covers this document alone. Other routes an integration reads, the edition and the location, track, session type and custom field lists, carry no validator and can change without moving it, so refetch those unconditionally.",
+                "Retrieves the most recent publication of an edition, preliminary or final. This is the route an integration reads. Requires the viewer role or an integration token; the latter sees slots for confirmed sessions only and is the only caller given a validator.\n\nThe document is a complete snapshot rather than a delta: anything absent from a fresh fetch is gone, and there is no tombstone saying so. Match slots against a previously held copy by `stableId`, since `id` changes on every publication, and everything else by `id`. The validator covers this document alone. Other routes an integration reads, the edition and the location, venue, track, session type and custom field lists, carry no validator and can change without moving it, so refetch those unconditionally.",
             operationId: "showCurrentSchedule",
             parameters: [
                 createUuidPathParameter("editionId"),

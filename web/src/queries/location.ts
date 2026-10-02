@@ -14,15 +14,19 @@ export const locationAvailabilityAttributesSchema = z.object({
     endsAt: zt.instant(),
 });
 
-/**
- * Absent below manager, where the API drops the include rather than refusing.
- *
- * Nothing shown to such a caller reads it: the published view strips
- * availability from every room before drawing, and the form that edits it sits
- * behind the manager gate. So there is no reading to get wrong, unlike a host's
- * availability, which the grid would take for "free throughout".
- */
 const locationRelationships = {
+    venue: {
+        type: "venue",
+        cardinality: "one",
+    },
+    /**
+     * Absent below manager, where the API drops the include rather than refusing.
+     *
+     * Nothing shown to such a caller reads it: the published view strips
+     * availability from every room before drawing, and the form that edits it
+     * sits behind the manager gate. So there is no reading to get wrong, unlike
+     * a host's availability, which the grid would take for "free throughout".
+     */
     availabilities: {
         type: "location_availability",
         cardinality: "many",

@@ -19,6 +19,7 @@ import {
     type LocationFieldValues,
     LocationFormFields,
     type LocationTransformedValues,
+    locationAvailabilityDefaults,
     locationFormSchema,
 } from "./-components/LocationFormFields.tsx";
 
@@ -30,13 +31,14 @@ const Root = (): ReactNode => {
         params: { editionId },
     });
     const qof = useQueryOptionsFactory();
+    const venues = useSuspenseQuery(qof.venue.list(editionId)).data;
     const queryClient = useQueryClient();
     const location = useSuspenseQuery(qof.location.detail(editionId, locationId)).data;
     const updateMutation = useUpdateLocationMutation();
 
     const form = useForm<LocationFieldValues, unknown, LocationTransformedValues>({
         resolver: formResolver(locationFormSchema),
-        defaultValues: createLocationDefaultValues(location),
+        defaultValues: createLocationDefaultValues({ location, venues }),
     });
     const leaveGuard = useLeaveGuard(form);
 
@@ -53,7 +55,7 @@ const Root = (): ReactNode => {
         const settled = await queryClient.fetchQuery(qof.location.detail(editionId, locationId));
 
         form.resetField("availabilities", {
-            defaultValue: createLocationDefaultValues(settled).availabilities,
+            defaultValue: locationAvailabilityDefaults(settled),
         });
 
         enqueueSnackbar(
@@ -106,6 +108,7 @@ const Root = (): ReactNode => {
                 <Stack spacing={3}>
                     <LocationFormFields
                         control={form.control}
+                        venues={venues}
                         startDate={edition.startDate}
                         endDate={edition.endDate}
                         timeZone={edition.timeZone}
@@ -130,16 +133,19 @@ const Root = (): ReactNode => {
 export const Route = createFileRoute("/_user/manage/$editionId/locations/edit/$locationId")({
     component: Root,
     loader: async ({ context, params }) => {
-        try {
-            await context.queryClient.ensureQueryData(
-                context.qof.location.detail(params.editionId, params.locationId),
-            );
-        } catch (error) {
-            if (error instanceof JsonApiError && error.status === 404) {
-                throw notFound();
-            }
+        const location = context.queryClient
+            .ensureQueryData(context.qof.location.detail(params.editionId, params.locationId))
+            .catch((error: unknown) => {
+                if (error instanceof JsonApiError && error.status === 404) {
+                    throw notFound();
+                }
 
-            throw error;
-        }
+                throw error;
+            });
+
+        await Promise.all([
+            context.queryClient.ensureQueryData(context.qof.venue.list(params.editionId)),
+            location,
+        ]);
     },
 });

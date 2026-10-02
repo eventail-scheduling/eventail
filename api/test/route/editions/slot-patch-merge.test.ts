@@ -4,6 +4,7 @@ import { ref } from "@mikro-orm/core";
 import { Edition } from "../../../src/entity/Edition.js";
 import { Location } from "../../../src/entity/Location.js";
 import { Slot } from "../../../src/entity/Slot.js";
+import { Venue } from "../../../src/entity/Venue.js";
 import { em } from "../../../src/util/mikro-orm.js";
 import { buildScheduleFixture, buildTeamMember } from "../../setup/fixtures.js";
 import { expectJsonApiError, jsonApi } from "../../setup/json-api.js";
@@ -41,6 +42,7 @@ describe("slot patch merge", () => {
             name: "Side Room",
             externalKey: null,
             edition: ref(edition),
+            venue: ref(fork.getReference(Venue, fixture.venueId)),
         });
         await fork.persist(otherLocation).flush();
         otherLocationId = otherLocation.id;

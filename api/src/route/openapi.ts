@@ -18,6 +18,7 @@ import { addOpenapiSessionTransitionPaths } from "./editions/session-transitions
 import { addOpenapiSessionTypePaths } from "./editions/session-types.js";
 import { addOpenapiSessionPaths } from "./editions/sessions/index.js";
 import { addOpenapiTrackPaths } from "./editions/tracks.js";
+import { addOpenapiVenuePaths } from "./editions/venues.js";
 import { addOpenapiSessionHostInviteAcceptancePaths } from "./invites/session-host.js";
 import { addOpenapiTeamInviteAcceptancePaths } from "./invites/team.js";
 import { addOpenapiJobPaths } from "./jobs.js";
@@ -100,6 +101,7 @@ export const buildOpenapiSpecJson = (): string => {
 
     addOpenapiEditionPaths(builder);
     addOpenapiLocationPaths(builder);
+    addOpenapiVenuePaths(builder);
     addOpenapiTrackPaths(builder);
     addOpenapiSessionTypePaths(builder);
     addOpenapiCustomFieldPaths(builder);

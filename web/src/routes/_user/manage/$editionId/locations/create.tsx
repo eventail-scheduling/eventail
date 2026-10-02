@@ -1,6 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Button, Paper, Stack, Typography } from "@mui/material";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { enqueueSnackbar } from "notistack";
 import type { ReactNode } from "react";
@@ -29,12 +29,13 @@ const Root = (): ReactNode => {
         params: { editionId },
     });
     const qof = useQueryOptionsFactory();
+    const venues = useSuspenseQuery(qof.venue.list(editionId)).data;
     const queryClient = useQueryClient();
     const createMutation = useCreateLocationMutation();
 
     const form = useForm<LocationFieldValues, unknown, LocationTransformedValues>({
         resolver: formResolver(locationFormSchema),
-        defaultValues: createLocationDefaultValues(null),
+        defaultValues: createLocationDefaultValues({ location: null, venues }),
     });
     const leaveGuard = useLeaveGuard(form);
 
@@ -50,7 +51,7 @@ const Root = (): ReactNode => {
         await queryClient.fetchQuery(qof.edition.get(editionId));
 
         form.resetField("availabilities", {
-            defaultValue: createLocationDefaultValues(null).availabilities,
+            defaultValue: [],
         });
 
         enqueueSnackbar(
@@ -103,6 +104,7 @@ const Root = (): ReactNode => {
                 <Stack spacing={3}>
                     <LocationFormFields
                         control={form.control}
+                        venues={venues}
                         startDate={edition.startDate}
                         endDate={edition.endDate}
                         timeZone={edition.timeZone}
@@ -125,4 +127,7 @@ const Root = (): ReactNode => {
 
 export const Route = createFileRoute("/_user/manage/$editionId/locations/create")({
     component: Root,
+    loader: async ({ context, params }) => {
+        await context.queryClient.ensureQueryData(context.qof.venue.list(params.editionId));
+    },
 });

@@ -17,6 +17,7 @@ import { sessionStateLabels } from "#/components/SessionStateChip.tsx";
 import type { Location } from "#/queries/location.js";
 import type { Slot } from "#/queries/schedule.js";
 import { slottableStates } from "#/queries/session.ts";
+import type { Venue } from "#/queries/venue.js";
 import {
     type BusinessHours,
     buildLayout,
@@ -300,6 +301,13 @@ const closedBands = (layout: GridLayout, closed: readonly MinuteSpan[]): ClosedB
 type ScheduleGridProps = {
     axis: ScheduleAxis;
     locations: Location[];
+    /**
+     * Named under each room, but only once an edition has more than one.
+     *
+     * With one venue the line says the same thing in every column, and every
+     * line in this header costs a visible hour row.
+     */
+    venues: readonly Venue[];
     slots: Slot[];
     businessHours?: BusinessHours;
     /** Drawn inside each hour, so a gesture has something to aim at. */
@@ -328,6 +336,7 @@ type ScheduleGridProps = {
 export const ScheduleGrid = ({
     axis,
     locations,
+    venues,
     slots,
     businessHours = defaultBusinessHours,
     step,
@@ -465,6 +474,11 @@ export const ScheduleGrid = ({
             instantAtMinutes(axis, span.to),
         );
 
+    const venueNames = useMemo(
+        () => (venues.length > 1 ? new Map(venues.map((venue) => [venue.id, venue.name])) : null),
+        [venues],
+    );
+
     const headerStyle = {
         position: "sticky",
         top: 0,
@@ -509,14 +523,24 @@ export const ScheduleGrid = ({
                 />
 
                 {locations.map((location) => (
-                    <Typography
+                    <Box
                         key={location.id}
-                        variant="subtitle2"
-                        noWrap
                         sx={{ ...headerStyle, px: 1, py: 0.5, textAlign: "center" }}
                     >
-                        {location.name}
-                    </Typography>
+                        <Typography variant="subtitle2" noWrap>
+                            {location.name}
+                        </Typography>
+                        {venueNames && (
+                            <Typography
+                                variant="caption"
+                                noWrap
+                                color="text.secondary"
+                                sx={{ display: "block" }}
+                            >
+                                {venueNames.get(location.venue.id)}
+                            </Typography>
+                        )}
+                    </Box>
                 ))}
 
                 <Box sx={{ ...pinnedLeft, height: layout.height }}>

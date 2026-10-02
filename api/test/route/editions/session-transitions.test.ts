@@ -15,6 +15,7 @@ import {
     buildHost,
     buildSession,
     buildTeamMember,
+    buildVenue,
     findOrBuildHost,
 } from "../../setup/fixtures.js";
 import { expectJsonApiError, jsonApi } from "../../setup/json-api.js";
@@ -245,11 +246,13 @@ describe("session-transitions", () => {
         const session = await fork.findOneOrFail(Session, hostedSessionId);
         const schedule = new Schedule({ edition: ref(edition), sequence: 1 });
         schedule.publish(edition, Temporal.Now.instant());
+        const venue = buildVenue(edition);
         const location = new Location({
             position: 0,
             name: "Cancellation Room",
             externalKey: null,
             edition: ref(edition),
+            venue: ref(venue),
         });
         const slot = new Slot({
             startsAt: Temporal.Instant.from("2027-11-02T15:00:00Z"),

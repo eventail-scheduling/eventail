@@ -14,6 +14,7 @@ import { createTeamQueryOptionsFactory } from "#/queries/team.ts";
 import { createTimezoneQueryOptionsFactory } from "#/queries/timezone.js";
 import { createTrackQueryOptionsFactory } from "#/queries/track.ts";
 import { createUserQueryOptionsFactory } from "#/queries/user.ts";
+import { createVenueQueryOptionsFactory } from "#/queries/venue.ts";
 
 export const createQueryOptionsFactory = (authFetch: typeof fetch) => ({
     clock: createClockQueryOptionsFactory(authFetch),
@@ -31,6 +32,7 @@ export const createQueryOptionsFactory = (authFetch: typeof fetch) => ({
     track: createTrackQueryOptionsFactory(authFetch),
     timezone: createTimezoneQueryOptionsFactory(authFetch),
     user: createUserQueryOptionsFactory(authFetch),
+    venue: createVenueQueryOptionsFactory(authFetch),
 });
 
 export type QueryOptionsFactory = ReturnType<typeof createQueryOptionsFactory>;

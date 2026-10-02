@@ -22,12 +22,14 @@ const Root = (): ReactNode => (
 );
 
 export const Route = createFileRoute("/_user/manage/$editionId/schedule")({
-    // Both readings want the rooms, and the picker in each wants the list, so
-    // ensuring them here keeps either child off the router's full page spinner.
+    // Both readings want the rooms and the venues they sit in, and the picker
+    // in each wants the list, so ensuring them here keeps either child off the
+    // router's full page spinner.
     loader: async ({ context, params }) => {
         await Promise.all([
             context.queryClient.ensureQueryData(context.qof.schedule.list(params.editionId)),
             context.queryClient.ensureQueryData(context.qof.location.list(params.editionId)),
+            context.queryClient.ensureQueryData(context.qof.venue.list(params.editionId)),
         ]);
     },
     component: Root,

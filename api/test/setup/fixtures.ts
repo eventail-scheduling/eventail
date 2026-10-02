@@ -8,8 +8,10 @@ import { Session, type SessionState } from "../../src/entity/Session.js";
 import { SessionType } from "../../src/entity/SessionType.js";
 import { Team, type TeamRole } from "../../src/entity/Team.js";
 import { User } from "../../src/entity/User.js";
+import { Venue } from "../../src/entity/Venue.js";
 
 type EditionValues = ConstructorParameters<typeof Edition>[0];
+type VenueValues = ConstructorParameters<typeof Venue>[0];
 
 export const editionVersion = async (em: EntityManager, editionId: string): Promise<number> =>
     (await em.fork().findOneOrFail(Edition, editionId)).version;
@@ -158,6 +160,7 @@ export type ScheduleFixture = {
     scheduleId: string;
     sessionId: string;
     locationId: string;
+    venueId: string;
 };
 
 export type ScheduleFixtureOptions = {
@@ -167,6 +170,16 @@ export type ScheduleFixtureOptions = {
     endDate?: string;
     timeZone?: string;
 };
+
+export const buildVenue = (edition: Edition, overrides: Partial<VenueValues> = {}): Venue =>
+    new Venue({
+        position: 0,
+        name: "Main Venue",
+        address: null,
+        externalKey: null,
+        edition: ref(edition),
+        ...overrides,
+    });
 
 /**
  * Persists an edition with one session, one location and one unpublished schedule.
@@ -193,20 +206,23 @@ export const buildScheduleFixture = async (
     const sessionType = SessionType.default(ref(edition));
     const session = buildSession(edition, sessionType, { title: `${name} Session` });
     session.state = sessionState;
+    const venue = buildVenue(edition);
     const location = new Location({
         position: 0,
         name: "Main Hall",
         externalKey: null,
         edition: ref(edition),
+        venue: ref(venue),
     });
     const schedule = new Schedule({ edition: ref(edition), sequence: 1 });
 
-    await fork.persist([edition, sessionType, session, location, schedule]).flush();
+    await fork.persist([edition, sessionType, session, venue, location, schedule]).flush();
 
     return {
         editionId: edition.id,
         scheduleId: schedule.id,
         sessionId: session.id,
         locationId: location.id,
+        venueId: venue.id,
     };
 };

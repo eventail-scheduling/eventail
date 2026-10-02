@@ -4,7 +4,7 @@ import { z } from "zod/mini";
 import type { CustomField } from "#/queries/custom-field.ts";
 import type { SessionType } from "#/queries/session-type.ts";
 import type { Track } from "#/queries/track.ts";
-import { externalKeySchema, formRelationshipSchema, zonedDateTimeSchema } from "#/utils/zod.js";
+import { emptyToNullSchema, formRelationshipSchema, zonedDateTimeSchema } from "#/utils/zod.js";
 
 export const customFieldOptionTypes = [
     "boolean",
@@ -33,7 +33,7 @@ export const customFieldFormSchema = z
     .object({
         title: z.string().check(z.trim(), z.minLength(1)),
         helperText: z.string().check(z.trim()),
-        externalKey: externalKeySchema,
+        externalKey: emptyToNullSchema,
         target: z.enum(["per_proposal", "per_host"]),
         requirement: z.enum(["always_optional", "always_required", "required_after_deadline"]),
         optionType: z.enum(customFieldOptionTypes),

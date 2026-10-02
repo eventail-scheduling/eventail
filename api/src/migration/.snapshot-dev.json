@@ -1359,6 +1359,23 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "integer"
+        },
+        "venue_id": {
+          "name": "venue_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
         }
       },
       "indexes": [
@@ -1421,6 +1438,17 @@
           ],
           "referencedTableName": "public.edition",
           "deleteRule": "cascade"
+        },
+        "location_venue_id_foreign": {
+          "columnNames": [
+            "venue_id"
+          ],
+          "constraintName": "location_venue_id_foreign",
+          "localTableName": "public.location",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.venue"
         }
       },
       "comment": null
@@ -3923,6 +3951,177 @@
       "checks": [],
       "triggers": [],
       "foreignKeys": {},
+      "comment": null
+    },
+    {
+      "name": "venue",
+      "schema": "public",
+      "columns": {
+        "address": {
+          "name": "address",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "edition_id": {
+          "name": "edition_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "external_key": {
+          "name": "external_key",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "position": {
+          "name": "position",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "edition_id",
+            "external_key"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "venue_edition_id_external_key_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "edition_id",
+            "id"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "venue_edition_id_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "edition_id",
+            "position"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "venue_edition_id_position_unique",
+          "primary": false,
+          "unique": true,
+          "deferMode": "deferred"
+        },
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "venue_pkey",
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {
+        "venue_edition_id_foreign": {
+          "columnNames": [
+            "edition_id"
+          ],
+          "constraintName": "venue_edition_id_foreign",
+          "localTableName": "public.venue",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.edition",
+          "deleteRule": "cascade"
+        }
+      },
       "comment": null
     }
   ],

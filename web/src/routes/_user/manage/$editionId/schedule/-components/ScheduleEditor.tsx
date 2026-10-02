@@ -39,6 +39,7 @@ import type { Location } from "#/queries/location.js";
 import type { Schedule, ScheduleSummary, Slot } from "#/queries/schedule.js";
 import type { SlottableSession } from "#/queries/session.js";
 import type { SlotsSettleReport } from "#/queries/settle.js";
+import type { Venue } from "#/queries/venue.js";
 import { defaultMutationErrorHandler, hasErrorCode } from "#/utils/api.ts";
 import { DraftActions } from "./DraftActions.tsx";
 import { CORNER_INSET, CORNER_SIZE, DropCorner } from "./DropCorner.tsx";
@@ -92,6 +93,7 @@ type ScheduleEditorProps = {
     editionId: string;
     axis: ScheduleAxis;
     locations: Location[];
+    venues: readonly Venue[];
     draft: Schedule;
     sessions: SlottableSession[];
     schedules: ScheduleSummary[];
@@ -104,6 +106,7 @@ export const ScheduleEditor = ({
     editionId,
     axis,
     locations,
+    venues,
     draft,
     sessions,
     schedules,
@@ -506,6 +509,7 @@ export const ScheduleEditor = ({
                     <ScheduleGrid
                         axis={axis}
                         locations={locations}
+                        venues={venues}
                         slots={draft.slots}
                         step={step}
                         drag={drag}

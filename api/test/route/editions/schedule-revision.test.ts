@@ -19,6 +19,7 @@ import {
     buildSession,
     buildSuperAdmin,
     buildTeamMember,
+    buildVenue,
     editionVersion,
 } from "../../setup/fixtures.js";
 import { jsonApi } from "../../setup/json-api.js";
@@ -103,11 +104,13 @@ describe("schedule revision", () => {
             internal: false,
             edition: ref(edition),
         });
+        const venue = buildVenue(edition);
         const location = new Location({
             position: 0,
             name: "Revision Hall",
             externalKey: null,
             edition: ref(edition),
+            venue: ref(venue),
         });
 
         const publication = new Schedule({ edition: ref(edition), sequence: 1 });

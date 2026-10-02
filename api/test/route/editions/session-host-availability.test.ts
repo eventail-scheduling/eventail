@@ -7,7 +7,13 @@ import { Schedule } from "../../../src/entity/Schedule.js";
 import { SessionType } from "../../../src/entity/SessionType.js";
 import { Slot } from "../../../src/entity/Slot.js";
 import { em } from "../../../src/util/mikro-orm.js";
-import { buildEdition, buildHost, buildSession, buildTeamMember } from "../../setup/fixtures.js";
+import {
+    buildEdition,
+    buildHost,
+    buildSession,
+    buildTeamMember,
+    buildVenue,
+} from "../../setup/fixtures.js";
 import { jsonApi } from "../../setup/json-api.js";
 import { fetchAccessToken } from "../../setup/token.js";
 
@@ -98,11 +104,13 @@ describe("session host availability", () => {
         // contains the host whose availability must not appear on it. Without
         // one the assertions below run over an empty array and prove nothing.
         const schedule = new Schedule({ edition: ref(edition), sequence: 1 });
+        const venue = buildVenue(edition);
         const room = new Location({
             name: "Main hall",
             externalKey: null,
             position: 1,
             edition: ref(edition),
+            venue: ref(venue),
         });
         const slot = new Slot({
             startsAt: Temporal.Instant.from("2027-10-01T08:00:00Z"),

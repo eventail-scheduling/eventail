@@ -17,6 +17,13 @@ export const locationSerializer: EntitySerializer<Location> = {
                 position: entity.position,
             },
             relationships: {
+                venue: {
+                    data: {
+                        type: "venue",
+                        id: entity.venue.id,
+                        entity: entity.venue.isInitialized() ? entity.venue.unwrap() : undefined,
+                    },
+                },
                 ...(entity.availabilities.isInitialized() && {
                     availabilities: {
                         data: entity.availabilities.map((availability) => ({
@@ -34,6 +41,7 @@ export const locationResourceFields = [
     "name",
     "externalKey",
     "position",
+    "venue",
     "availabilities",
 ] as const;
 
@@ -89,6 +97,12 @@ export const locationResourceSchema = buildResourceSchemaObject({
         additionalProperties: false,
     },
     relationships: [
+        {
+            id: { type: "string", format: "uuid" },
+            type: "venue",
+            name: "venue",
+            cardinality: "one",
+        },
         {
             id: { type: "string", format: "uuid" },
             type: "location_availability",

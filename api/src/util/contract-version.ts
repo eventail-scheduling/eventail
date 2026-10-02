@@ -8,4 +8,4 @@ export const contractVersionHeader = "Eventail-Contract-Version";
  * major, so a derived number would fall from 7 to 1 the day 1.0.0 ships, and
  * a contract version that goes backwards is worse than none.
  */
-export const contractVersion = 1;
+export const contractVersion = 2;

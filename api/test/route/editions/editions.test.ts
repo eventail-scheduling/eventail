@@ -17,12 +17,14 @@ import { SessionType } from "../../../src/entity/SessionType.js";
 import { Slot } from "../../../src/entity/Slot.js";
 import { Track } from "../../../src/entity/Track.js";
 import { User } from "../../../src/entity/User.js";
+import { Venue } from "../../../src/entity/Venue.js";
 import { em } from "../../../src/util/mikro-orm.js";
 import {
     buildEdition,
     buildHost,
     buildSession,
     buildTeamMember,
+    buildVenue,
     editionVersion,
     fallBackWeek,
 } from "../../setup/fixtures.js";
@@ -73,11 +75,24 @@ describe("editions", () => {
             internal: true,
             edition: ref(templateEdition),
         });
+        const templateVenue = new Venue({
+            position: 0,
+            name: "Main Venue",
+            address: "1 Example Street",
+            externalKey: "main-venue",
+            edition: ref(templateEdition),
+        });
+        const templateSecondVenue = buildVenue(templateEdition, {
+            position: 1,
+            name: "Second Venue",
+            externalKey: "second-venue",
+        });
         const templateLocation = new Location({
             position: 0,
             name: "Main Hall",
             externalKey: "main-hall",
             edition: ref(templateEdition),
+            venue: ref(templateSecondVenue),
         });
         const templateLocationAvailability = new LocationAvailability({
             startsAt: Temporal.Instant.from("2027-09-01T07:00:00Z"),
@@ -118,6 +133,8 @@ describe("editions", () => {
                 templateDefaultSessionType,
                 templateWorkshopSessionType,
                 templateTrack,
+                templateVenue,
+                templateSecondVenue,
                 templateLocation,
                 templateLocationAvailability,
                 templateCustomField,
@@ -246,11 +263,13 @@ describe("editions", () => {
                 emailAddress: "avail-host@example.test",
             });
             const host = buildHost(edition, user);
+            const availVenue = buildVenue(edition);
             const location = new Location({
                 position: 1,
                 name: "Avail Hall",
                 externalKey: "avail-hall",
                 edition: ref(edition),
+                venue: ref(availVenue),
             });
             const hostAvailability = new HostAvailability({
                 ...berlinInterval("2029-05-01", "09:00", "17:00"),
@@ -435,11 +454,13 @@ describe("editions", () => {
                 endDate: Temporal.PlainDate.from("2026-03-30"),
                 timeZone: "UTC",
             });
+            const edgeVenue = buildVenue(edition);
             const location = new Location({
                 position: 2,
                 name: "Edge Hall",
                 externalKey: "edge-hall",
                 edition: ref(edition),
+                venue: ref(edgeVenue),
             });
             const availability = new LocationAvailability({
                 startsAt: Temporal.Instant.from("2026-03-30T22:00:00Z"),
@@ -938,11 +959,13 @@ describe("editions", () => {
             internal: false,
             edition: ref(edition),
         });
+        const purgedVenue = buildVenue(edition);
         const location = new Location({
             position: 3,
             name: "Purged Room",
             externalKey: null,
             edition: ref(edition),
+            venue: ref(purgedVenue),
         });
         const customField = new CustomField({
             position: 1,
@@ -1160,7 +1183,22 @@ describe("editions", () => {
         assert.equal(tracks[0].internal, true);
         assert.equal(tracks[0].externalKey, "main");
 
+        const venues = await fork.find(Venue, { edition: copiedEditionId });
+        assert.deepEqual(venues.map((venue) => venue.name).sort(), ["Main Venue", "Second Venue"]);
+        assert.deepEqual(venues.map((venue) => venue.externalKey).sort(), [
+            "main-venue",
+            "second-venue",
+        ]);
+
         const locations = await fork.find(Location, { edition: copiedEditionId });
+        // Both sides are Ref<Venue>, so a spread carrying the template's venue
+        // across the boundary typechecks and only this catches it.
+        const secondCopy = venues.find((venue) => venue.externalKey === "second-venue");
+        assert(secondCopy);
+        assert.deepEqual(
+            locations.map((location) => location.venue.id),
+            [secondCopy.id],
+        );
         assert.deepEqual(
             locations.map((location) => location.name),
             ["Main Hall"],

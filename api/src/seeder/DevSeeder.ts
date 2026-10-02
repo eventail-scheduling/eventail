@@ -15,6 +15,7 @@ import { Slot } from "../entity/Slot.js";
 import { Team } from "../entity/Team.js";
 import { Track } from "../entity/Track.js";
 import { User } from "../entity/User.js";
+import { Venue } from "../entity/Venue.js";
 
 /** Fixes an id so a reseed keeps every bookmarked URL working. */
 const withId = <TEntity extends { id: string }>(entity: TEntity, id: string): TEntity => {
@@ -236,16 +237,29 @@ export class DevSeeder extends Seeder {
             seedId("100", 4),
         );
 
+        const lagoonVenue = withId(
+            new Venue({
+                name: "Lagoon Resort",
+                address: null,
+                externalKey: "lagoon-resort",
+                position: 0,
+                edition: ref(edition),
+            }),
+            seedId("620", 2),
+        );
+
         em.persist([
             edition,
             withId(new Schedule({ edition: ref(edition), sequence: 1 }), seedId("110", 4)),
             withId(SessionType.default(ref(edition)), seedId("400", 5)),
+            lagoonVenue,
             withId(
                 new Location({
                     name: "Lagoon Room",
                     externalKey: "lagoon-room",
                     position: 0,
                     edition: ref(edition),
+                    venue: ref(lagoonVenue),
                 }),
                 seedId("600", 3),
             ),
@@ -456,12 +470,23 @@ export class DevSeeder extends Seeder {
      * are two.
      */
     private createLocations(em: EntityManager, edition: Edition): SeededLocations {
+        const venue = withId(
+            new Venue({
+                name: "Congress Center",
+                address: "1 Example Street",
+                externalKey: "congress-center",
+                position: 0,
+                edition: ref(edition),
+            }),
+            seedId("620", 1),
+        );
         const mainHall = withId(
             new Location({
                 name: "Main Hall",
                 externalKey: "main-hall",
                 position: 0,
                 edition: ref(edition),
+                venue: ref(venue),
             }),
             seedId("600", 1),
         );
@@ -471,6 +496,7 @@ export class DevSeeder extends Seeder {
                 externalKey: "side-room",
                 position: 1,
                 edition: ref(edition),
+                venue: ref(venue),
             }),
             seedId("600", 2),
         );
@@ -486,6 +512,7 @@ export class DevSeeder extends Seeder {
                     ...values,
                     position: index + 2,
                     edition: ref(edition),
+                    venue: ref(venue),
                 }),
                 seedId("600", index + 4),
             ),
@@ -506,7 +533,7 @@ export class DevSeeder extends Seeder {
             ),
         );
 
-        em.persist([mainHall, sideRoom, ...extras, ...availabilities]);
+        em.persist([venue, mainHall, sideRoom, ...extras, ...availabilities]);
 
         return { mainHall, sideRoom, workshopRoom, lab, atriumStage, quietRoom };
     }

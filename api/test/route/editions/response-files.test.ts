@@ -12,7 +12,13 @@ import { User } from "../../../src/entity/User.js";
 import { appConfig } from "../../../src/util/app-config.js";
 import { em } from "../../../src/util/mikro-orm.js";
 import { s3Client } from "../../../src/util/s3.js";
-import { buildEdition, buildHost, buildSession, buildTeamMember } from "../../setup/fixtures.js";
+import {
+    buildEdition,
+    buildHost,
+    buildSession,
+    buildTeamMember,
+    buildVenue,
+} from "../../setup/fixtures.js";
 import { expectJsonApiError, jsonApi } from "../../setup/json-api.js";
 import { fetchAccessToken } from "../../setup/token.js";
 
@@ -115,11 +121,13 @@ describe("response files", () => {
         });
         const outsiderHost = buildHost(edition, outsiderUser);
 
+        const venue = buildVenue(edition);
         const location = new Location({
             position: 0,
             name: "Main Hall",
             externalKey: null,
             edition: ref(edition),
+            venue: ref(venue),
         });
         const schedule = new Schedule({ edition: ref(edition), sequence: 1 });
         schedule.publish(edition, Temporal.Now.instant());

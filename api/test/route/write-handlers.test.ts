@@ -44,6 +44,10 @@ const classifications: Record<string, Classification> = {
         bumps: true,
         reason: "position is served to integrations, so the column order they draw changed",
     },
+    "editions/index.ts#reorderVenuesHandler": {
+        bumps: true,
+        reason: "position is served to integrations, so the venue order they draw changed",
+    },
     "editions/index.ts#createEditionHandler": {
         bumps: false,
         reason: "a new edition has no publication",
@@ -63,7 +67,7 @@ const classifications: Record<string, Classification> = {
     },
     "editions/locations.ts#updateLocationHandler": {
         bumps: true,
-        reason: "the name or external key changed on the location",
+        reason: "the name, external key or venue changed on the location",
     },
     "editions/locations.ts#deleteLocationHandler": {
         bumps: false,
@@ -153,6 +157,19 @@ const classifications: Record<string, Classification> = {
     "editions/tracks.ts#deleteTrackHandler": {
         bumps: true,
         reason: "the delete detaches sessions via SET NULL and removes a track the document may serve",
+    },
+
+    "editions/venues.ts#createVenueHandler": {
+        bumps: false,
+        reason: "a new venue is referenced by nothing",
+    },
+    "editions/venues.ts#updateVenueHandler": {
+        bumps: true,
+        reason: "the name, address or external key changed on the venue",
+    },
+    "editions/venues.ts#deleteVenueHandler": {
+        bumps: false,
+        reason: "a venue no location names is in no publication",
     },
 
     "invites/session-host.ts#acceptInviteHandler": {

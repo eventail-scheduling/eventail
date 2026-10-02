@@ -16,6 +16,7 @@ type LocationAttributes = {
 
 type CreateLocationValues = LocationAttributes & {
     editionId: string;
+    venue: string;
     availabilities: AvailabilityInterval[];
 };
 
@@ -31,11 +32,12 @@ type IncludedAvailability = {
 
 type LocationBody = {
     attributes: LocationAttributes;
+    venue: string;
     availabilities: readonly AvailabilityInterval[];
     id?: string;
 };
 
-const locationBody = ({ attributes, availabilities, id }: LocationBody): string => {
+const locationBody = ({ attributes, venue, availabilities, id }: LocationBody): string => {
     const included = availabilities.map(
         (interval, index): IncludedAvailability => ({
             type: "location_availability",
@@ -53,6 +55,7 @@ const locationBody = ({ attributes, availabilities, id }: LocationBody): string 
             type: "location",
             attributes,
             relationships: {
+                venue: { data: { type: "venue", id: venue } },
                 availabilities: { data: included.map(({ type, lid }) => ({ type, lid })) },
             },
         },
@@ -82,10 +85,10 @@ export const useCreateLocationMutation = (): UseMutationResult<
     const invalidate = useInvalidateLocations();
 
     return useMutation({
-        mutationFn: async ({ editionId, availabilities, ...attributes }) => {
+        mutationFn: async ({ editionId, venue, availabilities, ...attributes }) => {
             const response = await fetch(apiUrl(`/editions/${editionId}/locations`), {
                 method: "POST",
-                body: locationBody({ attributes, availabilities }),
+                body: locationBody({ attributes, venue, availabilities }),
                 headers: jsonApiHeaders,
             });
             await handleJsonApiError(response);
@@ -105,10 +108,10 @@ export const useUpdateLocationMutation = (): UseMutationResult<
     const invalidate = useInvalidateLocations();
 
     return useMutation({
-        mutationFn: async ({ editionId, id, availabilities, ...attributes }) => {
+        mutationFn: async ({ editionId, id, venue, availabilities, ...attributes }) => {
             const response = await fetch(apiUrl(`/editions/${editionId}/locations/${id}`), {
                 method: "PATCH",
-                body: locationBody({ attributes, availabilities, id }),
+                body: locationBody({ attributes, venue, availabilities, id }),
                 headers: jsonApiHeaders,
             });
             await handleJsonApiError(response);

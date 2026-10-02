@@ -8,6 +8,7 @@ import {
 } from "#/components/ScheduleGrid/index.js";
 import type { Location } from "#/queries/location.js";
 import type { Slot } from "#/queries/schedule.js";
+import type { Venue } from "#/queries/venue.js";
 import { ScheduleHeaderRow } from "./ScheduleHeaderRow.tsx";
 
 const noWarnings: ReadonlyMap<string, string> = new Map();
@@ -16,6 +17,7 @@ type PublicationViewProps = {
     axis: ScheduleAxis;
     slots: Slot[];
     locations: Location[];
+    venues: readonly Venue[];
     picker: ReactNode;
 };
 
@@ -35,6 +37,7 @@ export const PublicationView = ({
     axis,
     slots,
     locations,
+    venues,
     picker,
 }: PublicationViewProps): ReactNode => {
     const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -75,6 +78,7 @@ export const PublicationView = ({
                 <ScheduleGrid
                     axis={axis}
                     locations={rooms}
+                    venues={venues}
                     slots={slots}
                     step={60}
                     drag={null}

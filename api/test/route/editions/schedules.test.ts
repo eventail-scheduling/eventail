@@ -10,9 +10,16 @@ import type { Session } from "../../../src/entity/Session.js";
 import { SessionType } from "../../../src/entity/SessionType.js";
 import { Slot } from "../../../src/entity/Slot.js";
 import { User } from "../../../src/entity/User.js";
+import { Venue } from "../../../src/entity/Venue.js";
 import { bumpEditionRevision } from "../../../src/support/edition-revision.js";
 import { em } from "../../../src/util/mikro-orm.js";
-import { buildEdition, buildHost, buildSession, buildTeamMember } from "../../setup/fixtures.js";
+import {
+    buildEdition,
+    buildHost,
+    buildSession,
+    buildTeamMember,
+    buildVenue,
+} from "../../setup/fixtures.js";
 import { expectJsonApiError, expectNoAttributes, jsonApi } from "../../setup/json-api.js";
 import { fetchAccessToken } from "../../setup/token.js";
 
@@ -25,6 +32,7 @@ describe("schedules", () => {
     let draftScheduleId: string;
     let sessionId: string;
     let locationId: string;
+    let venueId: string;
 
     before(async () => {
         [managerToken, viewerToken, outsiderToken, integrationToken] = await Promise.all([
@@ -61,11 +69,13 @@ describe("schedules", () => {
         const sessionType = SessionType.default(ref(edition));
         const session = buildSession(edition, sessionType, { title: "Schedulable Session" });
         session.state = "accepted";
+        const venue = buildVenue(edition);
         const location = new Location({
             position: 0,
             name: "Main Hall",
             externalKey: null,
             edition: ref(edition),
+            venue: ref(venue),
         });
         const schedule = new Schedule({ edition: ref(edition), sequence: 1 });
 
@@ -79,6 +89,7 @@ describe("schedules", () => {
                 edition,
                 sessionType,
                 session,
+                venue,
                 location,
                 schedule,
             ])
@@ -88,6 +99,7 @@ describe("schedules", () => {
         draftScheduleId = schedule.id;
         sessionId = session.id;
         locationId = location.id;
+        venueId = venue.id;
     });
 
     const listSchedules = (token: string) => jsonApi.get(`/editions/${editionId}/schedules`, token);
@@ -234,6 +246,7 @@ describe("schedules", () => {
             name: "Side Room",
             externalKey: null,
             edition: ref(edition),
+            venue: ref(fork.getReference(Venue, venueId)),
         });
         await fork.persist(sideRoom).flush();
 
@@ -449,11 +462,13 @@ describe("schedules", () => {
             const sessionType = SessionType.default(ref(edition));
             const schedule = new Schedule({ edition: ref(edition), sequence: 1 });
             schedule.publish(edition, Temporal.Now.instant());
+            const linkageVenue = buildVenue(edition, { name: "Linkage Venue" });
             const location = new Location({
                 position: 2,
                 name: "Linkage Room",
                 externalKey: null,
                 edition: ref(edition),
+                venue: ref(linkageVenue),
             });
 
             const confirmedSession = buildSession(edition, sessionType, {
@@ -569,6 +584,40 @@ describe("schedules", () => {
                 (resource) => resource.relationships?.slots?.data.map((slot) => slot.id) ?? [],
             );
         };
+
+        // The adapter resolves a room's venue from the document alone, so
+        // linkage without the resource would leave it with an id and no name.
+        it("carries the venue of every location it serves", async () => {
+            const response = await jsonApi.get(
+                `/editions/${linkageEditionId}/schedules/current` +
+                    "?include=slots.location,slots.location.venue",
+                integrationToken,
+            );
+
+            assert.equal(response.status, 200);
+            const document = (await response.json()) as {
+                included?: {
+                    type: string;
+                    id: string;
+                    attributes?: Record<string, unknown>;
+                    relationships?: { venue?: { data?: { type: string; id: string } } };
+                }[];
+            };
+
+            const included = document.included ?? [];
+            const location = included.find((resource) => resource.type === "location");
+            assert.ok(location);
+
+            const linkage = location.relationships?.venue?.data;
+            assert.ok(linkage);
+            assert.equal(linkage.type, "venue");
+
+            const venue = included.find(
+                (resource) => resource.type === "venue" && resource.id === linkage.id,
+            );
+            assert.ok(venue, "the venue a location names must be served with it");
+            assert.equal(venue.attributes?.name, "Linkage Venue");
+        });
 
         // The read runs in a read-only transaction, so MikroORM's unconditional
         // post-callback flush turns any change set into a 25006 and the request
@@ -843,7 +892,7 @@ describe("schedules", () => {
             assert.equal((await response.text()).length, 0);
             // A poller sees mostly these, and a 304 has no body to carry a
             // version in, which is why the contract version is a header.
-            assert.equal(response.headers.get("Eventail-Contract-Version"), "1");
+            assert.equal(response.headers.get("Eventail-Contract-Version"), "2");
         });
 
         it("lets an integration store the validator it was given", async () => {

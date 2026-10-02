@@ -5,11 +5,11 @@ import type { Control } from "react-hook-form";
 import { z } from "zod/mini";
 import { RhfDurationField } from "#/components/DurationField/index.js";
 import type { SessionType } from "#/queries/session-type.ts";
-import { durationSchema, externalKeySchema } from "#/utils/zod.js";
+import { durationSchema, emptyToNullSchema } from "#/utils/zod.js";
 
 export const sessionTypeFormSchema = z.object({
     name: z.string().check(z.trim(), z.minLength(1)),
-    externalKey: externalKeySchema,
+    externalKey: emptyToNullSchema,
     defaultDuration: durationSchema.check(
         z.refine((duration) => duration.total("minutes") >= 1, {
             error: "Must be at least a minute",

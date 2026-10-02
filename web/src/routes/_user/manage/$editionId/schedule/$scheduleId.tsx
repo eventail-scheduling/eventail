@@ -12,6 +12,7 @@ const Root = (): ReactNode => {
     const { editionId, scheduleId } = Route.useParams();
     const qof = useQueryOptionsFactory();
     const locations = useSuspenseQuery(qof.location.list(editionId)).data;
+    const venues = useSuspenseQuery(qof.venue.list(editionId)).data;
     const publication = useSuspenseQuery(qof.schedule.get(editionId, scheduleId)).data;
 
     const { startDate, endDate, timeZone } = publication;
@@ -36,6 +37,7 @@ const Root = (): ReactNode => {
             axis={axis}
             slots={publication.slots}
             locations={locations}
+            venues={venues}
             picker={<ShowingPicker editionId={editionId} showing={scheduleId} />}
         />
     );

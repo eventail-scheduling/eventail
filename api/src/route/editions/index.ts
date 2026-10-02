@@ -32,6 +32,7 @@ import { Session } from "../../entity/Session.js";
 import { SessionType } from "../../entity/SessionType.js";
 import { Slot } from "../../entity/Slot.js";
 import { Track } from "../../entity/Track.js";
+import { Venue } from "../../entity/Venue.js";
 import {
     editionDocumentMetaSchemaObject,
     editionResourceFields,
@@ -79,6 +80,7 @@ import { schedulesRouter } from "./schedules/index.js";
 import { sessionTypesRouter } from "./session-types.js";
 import { sessionsRouter } from "./sessions/index.js";
 import { tracksRouter } from "./tracks.js";
+import { reorderVenuesHandler, venuesRouter } from "./venues.js";
 
 const listEditionsQueryOptions = {
     fields: {
@@ -203,8 +205,18 @@ const createTemplateCopies = async (
 ): Promise<AnyEntity[]> => {
     const entities: AnyEntity[] = [];
 
+    const venueCopies = new Map<string, Venue>();
+
+    for (const venue of await em.find(Venue, { edition: template })) {
+        const copy = venue.copyToEdition(edition);
+        venueCopies.set(venue.id, copy);
+        entities.push(copy);
+    }
+
     for (const location of await em.find(Location, { edition: template })) {
-        entities.push(location.copyToEdition(edition));
+        const mappedVenue = venueCopies.get(location.venue.id);
+        assert(mappedVenue);
+        entities.push(location.copyToEdition(edition, ref(mappedVenue)));
     }
 
     const sessionTypeCopies = new Map<string, SessionType>();
@@ -398,6 +410,7 @@ export const editionsRouter = new Router()
     .nest("/:editionId/session-types", sessionTypesRouter)
     .nest("/:editionId/sessions", sessionsRouter)
     .nest("/:editionId/tracks", tracksRouter)
+    .nest("/:editionId/venues", venuesRouter)
     .nest("/:editionId/me", meRouter)
     .route(
         "/:editionId/confirm-reminders",
@@ -416,6 +429,10 @@ export const editionsRouter = new Router()
     .route(
         "/:editionId/relationships/locations",
         m.patch(reorderLocationsHandler).layer(requireManagerLayer),
+    )
+    .route(
+        "/:editionId/relationships/venues",
+        m.patch(reorderVenuesHandler).layer(requireManagerLayer),
     )
     .layer(resolveEditionLayer)
     // Reads carry no role layer on purpose: the edition list and detail are

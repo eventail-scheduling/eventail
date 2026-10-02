@@ -19,6 +19,7 @@ import {
     type IncludedTypeSchemas,
     type IncludedTypesContainer,
     relationshipSchema,
+    resourceIdentifierSchema,
 } from "@jsonapi-serde/server/request";
 import type { Loaded } from "@mikro-orm/core";
 import {
@@ -38,6 +39,7 @@ import type { Edition } from "../../entity/Edition.js";
 import { Location } from "../../entity/Location.js";
 import { LocationAvailability } from "../../entity/LocationAvailability.js";
 import type { User } from "../../entity/User.js";
+import { Venue } from "../../entity/Venue.js";
 import { serialize } from "../../json-api/index.js";
 import {
     locationResourceFields,
@@ -63,6 +65,8 @@ import { visibleFingerprint } from "../../support/visible-changes.js";
 import { JWT_PAYLOAD, type JwtPayload, RequireAuthorizationLayer, USER } from "../../util/auth.js";
 import {
     externalKeyTaken,
+    referenceGone,
+    translateForeignKeyViolations,
     translateUniqueViolations,
     type UniqueViolation,
 } from "../../util/constraint-violation.js";
@@ -147,6 +151,7 @@ const attributesSchema = z.strictObject({
 });
 
 const relationshipsSchema = z.strictObject({
+    venue: relationshipSchema(resourceIdentifierSchema("venue", z.uuid())),
     availabilities: relationshipSchema(
         z.array(clientResourceIdentifierSchema("location_availability")).max(maxAvailabilities),
     ),
@@ -213,6 +218,13 @@ const replaceAvailabilities = ({
     em.persist(location);
 };
 
+const findVenue = async (em: EntityManager, edition: Edition, venueId: string): Promise<Venue> => {
+    const venue = await em.findOne(Venue, { id: venueId, edition });
+    assertExists(venue, "Venue", venueId);
+
+    return venue;
+};
+
 const nextPosition = async (em: EntityManager, edition: Edition): Promise<number> => {
     const highest = await em.findOne(Location, { edition }, { orderBy: { position: "desc" } });
 
@@ -223,30 +235,35 @@ const createLocationHandler = createExtractHandler(
     jsonApiResource(locationResourceOptions),
     extension(EDITION, true),
 ).handler(async ({ attributes, relationships, includedTypes }, edition) => {
-    const location = await translateUniqueViolations(
+    const location = await translateForeignKeyViolations(
         () =>
-            em.transactional(async (em) => {
-                const locked = await takeEdition(em, edition.id, {
-                    mode: LockMode.PESSIMISTIC_WRITE,
-                    refresh: true,
-                });
+            translateUniqueViolations(
+                () =>
+                    em.transactional(async (em) => {
+                        const locked = await takeEdition(em, edition.id, {
+                            mode: LockMode.PESSIMISTIC_WRITE,
+                            refresh: true,
+                        });
 
-                const created = new Location({
-                    ...attributes,
-                    position: await nextPosition(em, locked),
-                    edition: ref(locked),
-                });
-                replaceAvailabilities({
-                    em,
-                    location: created,
-                    edition: locked,
-                    lids: relationships.availabilities.data.map((data) => data.lid),
-                    included: includedTypes.location_availability,
-                });
+                        const created = new Location({
+                            ...attributes,
+                            position: await nextPosition(em, locked),
+                            edition: ref(locked),
+                            venue: ref(await findVenue(em, locked, relationships.venue.data.id)),
+                        });
+                        replaceAvailabilities({
+                            em,
+                            location: created,
+                            edition: locked,
+                            lids: relationships.availabilities.data.map((data) => data.lid),
+                            included: includedTypes.location_availability,
+                        });
 
-                return created;
-            }),
-        locationUniqueViolations,
+                        return created;
+                    }),
+                locationUniqueViolations,
+            ),
+        { location_venue_id_foreign: referenceGone("Venue", relationships.venue.data.id) },
     );
 
     return [StatusCode.CREATED, serialize("location", location, { include: ["availabilities"] })];
@@ -257,34 +274,51 @@ const updateLocationHandler = createExtractHandler(
     jsonApiResource(locationResourceOptions, "locationId"),
     extension(EDITION, true),
 ).handler(async ({ locationId }, { attributes, relationships, includedTypes }, edition) => {
-    const location = await translateUniqueViolations(
+    const location = await translateForeignKeyViolations(
         () =>
-            em.transactional(async (em) => {
-                const locked = await takeEdition(em, edition.id, { refresh: true });
+            translateUniqueViolations(
+                () =>
+                    em.transactional(async (em) => {
+                        const locked = await takeEdition(em, edition.id, { refresh: true });
 
-                const location = await em.findOne(
-                    Location,
-                    { id: locationId, edition: locked },
-                    { lockMode: LockMode.PESSIMISTIC_WRITE, populate: ["availabilities"] },
-                );
-                assertExists(location, "Location", locationId);
-                const before = visibleFingerprint([location.name, location.externalKey]);
-                patchObject(location, attributes);
-                replaceAvailabilities({
-                    em,
-                    location,
-                    edition: locked,
-                    lids: relationships.availabilities.data.map((data) => data.lid),
-                    included: includedTypes.location_availability,
-                });
+                        const location = await em.findOne(
+                            Location,
+                            { id: locationId, edition: locked },
+                            { lockMode: LockMode.PESSIMISTIC_WRITE, populate: ["availabilities"] },
+                        );
+                        assertExists(location, "Location", locationId);
+                        const before = visibleFingerprint([
+                            location.name,
+                            location.externalKey,
+                            location.venue.id,
+                        ]);
+                        patchObject(location, attributes);
+                        location.venue = ref(
+                            await findVenue(em, locked, relationships.venue.data.id),
+                        );
+                        replaceAvailabilities({
+                            em,
+                            location,
+                            edition: locked,
+                            lids: relationships.availabilities.data.map((data) => data.lid),
+                            included: includedTypes.location_availability,
+                        });
 
-                if (visibleFingerprint([location.name, location.externalKey]) !== before) {
-                    await bumpEditionRevision(em, locked);
-                }
+                        const after = visibleFingerprint([
+                            location.name,
+                            location.externalKey,
+                            location.venue.id,
+                        ]);
 
-                return location;
-            }),
-        locationUniqueViolations,
+                        if (after !== before) {
+                            await bumpEditionRevision(em, locked);
+                        }
+
+                        return location;
+                    }),
+                locationUniqueViolations,
+            ),
+        { location_venue_id_foreign: referenceGone("Venue", relationships.venue.data.id) },
     );
 
     return serialize("location", location, { include: ["availabilities"] });
@@ -453,7 +487,7 @@ export const addOpenapiLocationPaths = (builder: OpenApiBuilder): void => {
                     included: [locationAvailabilityResourceSchema],
                 }),
                 403: buildErrorResponseObject({ description: "Manager role required" }),
-                404: buildErrorResponseObject({ description: "Edition not found" }),
+                404: buildErrorResponseObject({ description: "Edition or venue not found" }),
                 409: buildErrorResponseObject({
                     description:
                         "Another location in this edition already uses this external key" +
@@ -513,7 +547,9 @@ export const addOpenapiLocationPaths = (builder: OpenApiBuilder): void => {
                     included: [locationAvailabilityResourceSchema],
                 }),
                 403: buildErrorResponseObject({ description: "Manager role required" }),
-                404: buildErrorResponseObject({ description: "Edition or location not found" }),
+                404: buildErrorResponseObject({
+                    description: "Edition, location or venue not found",
+                }),
                 409: buildErrorResponseObject({
                     description:
                         "Another location in this edition already uses this external key" +

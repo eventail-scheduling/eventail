@@ -57,7 +57,11 @@
  * - A foreign key written with no ON DELETE clause is NO ACTION, and its
  *   check takes FOR KEY SHARE on every referencing row in the middle of the
  *   parent's DELETE. Deleting a session_type or a location reaches sessions
- *   and slots that way, at a point no statement in the handler names.
+ *   and slots that way, and deleting a venue reaches locations, at a point no
+ *   statement in the handler names. The venue delete holds only the edition
+ *   key share, so it takes locations in the opposite order to an update that
+ *   repoints one; the two stay apart only because MikroORM writes no venue_id
+ *   when the reference is unchanged.
  * - An UPDATE or INSERT setting a session's type or track takes FOR KEY SHARE
  *   on that row at flush, after the session write's share lock on the custom
  *   fields, and after a self-service create's user row and any pending upload
@@ -69,8 +73,9 @@
  *   exclusively first, which keeps them apart from the rest; any other update
  *   holds only its own row and waits on nothing after it but the counter.
  * - A deferred unique constraint is checked at COMMIT, after even the counter
- *   row this order calls last. custom_field.position and location.position are
- *   both deferred, and every writer that appends to or renumbers either holds
+ *   row this order calls last. custom_field.position, location.position and
+ *   venue.position are all deferred, and every writer that appends to or
+ *   renumbers any of them holds
  *   the edition FOR UPDATE first, so no second writer is ever in flight to
  *   collide with. A shared lock is not enough: two appends under one would read
  *   the same highest position and only find out at COMMIT, where a deferred

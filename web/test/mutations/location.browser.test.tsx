@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-react";
-import { useReorderLocationsMutation } from "#/mutations/location.ts";
+import { useCreateLocationMutation, useReorderLocationsMutation } from "#/mutations/location.ts";
 import type { Location } from "#/queries/location.ts";
 
 const { sent } = vi.hoisted(() => ({ sent: vi.fn() }));
@@ -14,8 +14,13 @@ vi.mock("@axa-fr/react-oidc", () => ({
 const editionId = "edition-1";
 const queryKey = ["locations", editionId];
 
-const locationNamed = (id: string): Location =>
-    ({ id, name: id, externalKey: null }) as unknown as Location;
+const locationNamed = (id: string): Location => ({
+    id,
+    name: id,
+    externalKey: null,
+    venue: { id: "venue-1" },
+    availabilities: [],
+});
 
 const placed = ["hall", "lab", "annex"].map(locationNamed);
 
@@ -123,5 +128,60 @@ describe("putting the rooms in a new order", () => {
         await reorder();
 
         await expect.poll(() => names(client)).toEqual(["hall", "lab", "annex"]);
+    });
+});
+
+type CreateProbeProps = {
+    venue: string;
+};
+
+const CreateProbe = ({ venue }: CreateProbeProps): ReactNode => {
+    const mutation = useCreateLocationMutation();
+
+    return (
+        <button
+            type="button"
+            onClick={() => {
+                mutation.mutate(
+                    {
+                        editionId,
+                        name: "Main Hall",
+                        externalKey: null,
+                        venue,
+                        availabilities: [],
+                    },
+                    { onError: () => undefined },
+                );
+            }}
+        >
+            Create
+        </button>
+    );
+};
+
+describe("creating a location", () => {
+    // The API refuses a body without a venue, and nothing on this side of the
+    // boundary would say so: both halves typecheck on their own.
+    it("names the venue it was given", async () => {
+        sent.mockResolvedValue(new Response(null, { status: 201 }));
+        const client = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
+
+        const screen = await render(
+            <QueryClientProvider client={client}>
+                <CreateProbe venue="venue-1" />
+            </QueryClientProvider>,
+        );
+
+        await screen.getByRole("button", { name: "Create" }).click();
+        await expect.poll(() => sent.mock.calls.length).toEqual(1);
+
+        const [, request] = sent.mock.lastCall as [URL, RequestInit];
+        const body = JSON.parse(request.body as string) as {
+            data: { relationships: Record<string, unknown> };
+        };
+
+        expect(body.data.relationships.venue).toEqual({
+            data: { type: "venue", id: "venue-1" },
+        });
     });
 });

@@ -19,6 +19,7 @@ import {
     buildSession,
     buildSuperAdmin,
     buildTeamMember,
+    buildVenue,
 } from "../../setup/fixtures.js";
 import { expectJsonApiError, expectNoAttributes, jsonApi } from "../../setup/json-api.js";
 import { fetchAccessToken } from "../../setup/token.js";
@@ -443,11 +444,13 @@ describe("session-visibility", () => {
             // schedule.
             const publishedSchedule = new Schedule({ edition: ref(foreignEdition), sequence: 1 });
             publishedSchedule.publish(foreignEdition, Temporal.Now.instant());
+            const foreignVenue = buildVenue(foreignEdition);
             const foreignLocation = new Location({
                 position: 0,
                 name: "Integration Room",
                 externalKey: null,
                 edition: ref(foreignEdition),
+                venue: ref(foreignVenue),
             });
             const publishedSlot = new Slot({
                 startsAt: Temporal.Instant.from("2027-11-03T09:00:00Z"),
@@ -460,11 +463,13 @@ describe("session-visibility", () => {
             });
 
             const schedule = new Schedule({ edition: ref(edition), sequence: 1 });
+            const responseVenue = buildVenue(edition);
             const location = new Location({
                 position: 1,
                 name: "Response Room",
                 externalKey: null,
                 edition: ref(edition),
+                venue: ref(responseVenue),
             });
             const slot = new Slot({
                 startsAt: Temporal.Instant.from("2027-11-02T09:00:00Z"),
@@ -898,11 +903,13 @@ describe("session-visibility", () => {
 
             const publishedSchedule = new Schedule({ edition: ref(foreignEdition), sequence: 1 });
             publishedSchedule.publish(foreignEdition, Temporal.Now.instant());
+            const notesVenue = buildVenue(foreignEdition);
             const location = new Location({
                 position: 2,
                 name: "Notes Room",
                 externalKey: null,
                 edition: ref(foreignEdition),
+                venue: ref(notesVenue),
             });
             const slot = new Slot({
                 startsAt: Temporal.Instant.from("2027-11-03T11:00:00Z"),

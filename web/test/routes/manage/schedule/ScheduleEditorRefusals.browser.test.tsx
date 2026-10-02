@@ -102,6 +102,7 @@ const EditorOverEdition = (): ReactNode => {
                 editionId={editionId}
                 axis={axis}
                 locations={locations}
+                venues={[]}
                 draft={draft}
                 sessions={[]}
                 schedules={schedules}

@@ -37,6 +37,7 @@ import { Route as UserManageEditionIdSessionsRouteRouteImport } from "./routes/_
 import { Route as UserManageEditionIdSettingsRouteRouteImport } from "./routes/_user/manage/$editionId/settings/route";
 import { Route as UserManageEditionIdSubmissionFormRouteRouteImport } from "./routes/_user/manage/$editionId/submission-form/route";
 import { Route as UserManageEditionIdTracksRouteRouteImport } from "./routes/_user/manage/$editionId/tracks/route";
+import { Route as UserManageEditionIdVenuesRouteRouteImport } from "./routes/_user/manage/$editionId/venues/route";
 import { Route as UserTeamsEditTeamIdRouteImport } from "./routes/_user/teams/edit.$teamId";
 import { Route as UserPublicEditionsEditionIdProfileRouteImport } from "./routes/_user/_public/editions/$editionId/profile";
 import { Route as UserManageEditionIdCustomFieldsIndexRouteImport } from "./routes/_user/manage/$editionId/custom-fields/index";
@@ -56,6 +57,8 @@ import { Route as UserManageEditionIdSubmissionFormMoreInfoRouteImport } from ".
 import { Route as UserManageEditionIdSubmissionFormProfileRouteImport } from "./routes/_user/manage/$editionId/submission-form/profile";
 import { Route as UserManageEditionIdSubmissionFormSessionRouteImport } from "./routes/_user/manage/$editionId/submission-form/session";
 import { Route as UserManageEditionIdTracksListRouteRouteImport } from "./routes/_user/manage/$editionId/tracks/_list/route";
+import { Route as UserManageEditionIdVenuesIndexRouteImport } from "./routes/_user/manage/$editionId/venues/index";
+import { Route as UserManageEditionIdVenuesCreateRouteImport } from "./routes/_user/manage/$editionId/venues/create";
 import { Route as UserPublicEditionsEditionIdSessionsIndexRouteImport } from "./routes/_user/_public/editions/$editionId/sessions/index";
 import { Route as UserPublicEditionsEditionIdSessionsCreateRouteImport } from "./routes/_user/_public/editions/$editionId/sessions/create";
 import { Route as UserManageEditionIdCustomFieldsEditCustomFieldIdRouteImport } from "./routes/_user/manage/$editionId/custom-fields/edit.$customFieldId";
@@ -65,6 +68,7 @@ import { Route as UserManageEditionIdSessionTypesListCreateRouteImport } from ".
 import { Route as UserManageEditionIdSessionsListIndexRouteImport } from "./routes/_user/manage/$editionId/sessions/_list/index";
 import { Route as UserManageEditionIdTracksListIndexRouteImport } from "./routes/_user/manage/$editionId/tracks/_list/index";
 import { Route as UserManageEditionIdTracksListCreateRouteImport } from "./routes/_user/manage/$editionId/tracks/_list/create";
+import { Route as UserManageEditionIdVenuesEditVenueIdRouteImport } from "./routes/_user/manage/$editionId/venues/edit.$venueId";
 import { Route as UserPublicEditionsEditionIdSessionsSessionIdIndexRouteImport } from "./routes/_user/_public/editions/$editionId/sessions/$sessionId/index";
 import { Route as UserPublicEditionsEditionIdSessionsSessionIdEditRouteImport } from "./routes/_user/_public/editions/$editionId/sessions/$sessionId/edit";
 import { Route as UserManageEditionIdSessionTypesListEditSessionTypeIdRouteImport } from "./routes/_user/manage/$editionId/session-types/_list/edit.$sessionTypeId";
@@ -220,6 +224,12 @@ const UserManageEditionIdTracksRouteRoute =
     path: "/tracks",
     getParentRoute: () => UserManageEditionIdRouteRoute,
   } as any);
+const UserManageEditionIdVenuesRouteRoute =
+  UserManageEditionIdVenuesRouteRouteImport.update({
+    id: "/venues",
+    path: "/venues",
+    getParentRoute: () => UserManageEditionIdRouteRoute,
+  } as any);
 const UserTeamsEditTeamIdRoute = UserTeamsEditTeamIdRouteImport.update({
   id: "/edit/$teamId",
   path: "/edit/$teamId",
@@ -330,6 +340,18 @@ const UserManageEditionIdTracksListRouteRoute =
     id: "/_list",
     getParentRoute: () => UserManageEditionIdTracksRouteRoute,
   } as any);
+const UserManageEditionIdVenuesIndexRoute =
+  UserManageEditionIdVenuesIndexRouteImport.update({
+    id: "/",
+    path: "/",
+    getParentRoute: () => UserManageEditionIdVenuesRouteRoute,
+  } as any);
+const UserManageEditionIdVenuesCreateRoute =
+  UserManageEditionIdVenuesCreateRouteImport.update({
+    id: "/create",
+    path: "/create",
+    getParentRoute: () => UserManageEditionIdVenuesRouteRoute,
+  } as any);
 const UserPublicEditionsEditionIdSessionsIndexRoute =
   UserPublicEditionsEditionIdSessionsIndexRouteImport.update({
     id: "/sessions/",
@@ -384,6 +406,12 @@ const UserManageEditionIdTracksListCreateRoute =
     path: "/create",
     getParentRoute: () => UserManageEditionIdTracksListRouteRoute,
   } as any);
+const UserManageEditionIdVenuesEditVenueIdRoute =
+  UserManageEditionIdVenuesEditVenueIdRouteImport.update({
+    id: "/edit/$venueId",
+    path: "/edit/$venueId",
+    getParentRoute: () => UserManageEditionIdVenuesRouteRoute,
+  } as any);
 const UserPublicEditionsEditionIdSessionsSessionIdIndexRoute =
   UserPublicEditionsEditionIdSessionsSessionIdIndexRouteImport.update({
     id: "/sessions/$sessionId/",
@@ -432,6 +460,7 @@ export interface FileRoutesByFullPath {
   "/manage/$editionId/settings": typeof UserManageEditionIdSettingsRouteRoute;
   "/manage/$editionId/submission-form": typeof UserManageEditionIdSubmissionFormRouteRouteWithChildren;
   "/manage/$editionId/tracks": typeof UserManageEditionIdTracksRouteRouteWithChildren;
+  "/manage/$editionId/venues": typeof UserManageEditionIdVenuesRouteRouteWithChildren;
   "/jobs/$jobId": typeof UserJobsListJobIdRoute;
   "/teams/edit/$teamId": typeof UserTeamsEditTeamIdRoute;
   "/jobs/": typeof UserJobsListIndexRoute;
@@ -446,16 +475,19 @@ export interface FileRoutesByFullPath {
   "/manage/$editionId/submission-form/more-info": typeof UserManageEditionIdSubmissionFormMoreInfoRoute;
   "/manage/$editionId/submission-form/profile": typeof UserManageEditionIdSubmissionFormProfileRoute;
   "/manage/$editionId/submission-form/session": typeof UserManageEditionIdSubmissionFormSessionRoute;
+  "/manage/$editionId/venues/create": typeof UserManageEditionIdVenuesCreateRoute;
   "/manage/$editionId/custom-fields/": typeof UserManageEditionIdCustomFieldsIndexRoute;
   "/manage/$editionId/hosts/": typeof UserManageEditionIdHostsIndexRoute;
   "/manage/$editionId/locations/": typeof UserManageEditionIdLocationsIndexRoute;
   "/manage/$editionId/schedule/": typeof UserManageEditionIdScheduleIndexRoute;
   "/manage/$editionId/submission-form/": typeof UserManageEditionIdSubmissionFormIndexRoute;
+  "/manage/$editionId/venues/": typeof UserManageEditionIdVenuesIndexRoute;
   "/editions/$editionId/sessions/create": typeof UserPublicEditionsEditionIdSessionsCreateRoute;
   "/manage/$editionId/custom-fields/edit/$customFieldId": typeof UserManageEditionIdCustomFieldsEditCustomFieldIdRoute;
   "/manage/$editionId/locations/edit/$locationId": typeof UserManageEditionIdLocationsEditLocationIdRoute;
   "/manage/$editionId/session-types/create": typeof UserManageEditionIdSessionTypesListCreateRoute;
   "/manage/$editionId/tracks/create": typeof UserManageEditionIdTracksListCreateRoute;
+  "/manage/$editionId/venues/edit/$venueId": typeof UserManageEditionIdVenuesEditVenueIdRoute;
   "/editions/$editionId/sessions/": typeof UserPublicEditionsEditionIdSessionsIndexRoute;
   "/manage/$editionId/session-types/": typeof UserManageEditionIdSessionTypesListIndexRoute;
   "/manage/$editionId/sessions/": typeof UserManageEditionIdSessionsListIndexRoute;
@@ -493,16 +525,19 @@ export interface FileRoutesByTo {
   "/manage/$editionId/submission-form/more-info": typeof UserManageEditionIdSubmissionFormMoreInfoRoute;
   "/manage/$editionId/submission-form/profile": typeof UserManageEditionIdSubmissionFormProfileRoute;
   "/manage/$editionId/submission-form/session": typeof UserManageEditionIdSubmissionFormSessionRoute;
+  "/manage/$editionId/venues/create": typeof UserManageEditionIdVenuesCreateRoute;
   "/manage/$editionId/custom-fields": typeof UserManageEditionIdCustomFieldsIndexRoute;
   "/manage/$editionId/hosts": typeof UserManageEditionIdHostsIndexRoute;
   "/manage/$editionId/locations": typeof UserManageEditionIdLocationsIndexRoute;
   "/manage/$editionId/schedule": typeof UserManageEditionIdScheduleIndexRoute;
   "/manage/$editionId/submission-form": typeof UserManageEditionIdSubmissionFormIndexRoute;
+  "/manage/$editionId/venues": typeof UserManageEditionIdVenuesIndexRoute;
   "/editions/$editionId/sessions/create": typeof UserPublicEditionsEditionIdSessionsCreateRoute;
   "/manage/$editionId/custom-fields/edit/$customFieldId": typeof UserManageEditionIdCustomFieldsEditCustomFieldIdRoute;
   "/manage/$editionId/locations/edit/$locationId": typeof UserManageEditionIdLocationsEditLocationIdRoute;
   "/manage/$editionId/session-types/create": typeof UserManageEditionIdSessionTypesListCreateRoute;
   "/manage/$editionId/tracks/create": typeof UserManageEditionIdTracksListCreateRoute;
+  "/manage/$editionId/venues/edit/$venueId": typeof UserManageEditionIdVenuesEditVenueIdRoute;
   "/editions/$editionId/sessions": typeof UserPublicEditionsEditionIdSessionsIndexRoute;
   "/editions/$editionId/sessions/$sessionId/edit": typeof UserPublicEditionsEditionIdSessionsSessionIdEditRoute;
   "/manage/$editionId/session-types/edit/$sessionTypeId": typeof UserManageEditionIdSessionTypesListEditSessionTypeIdRoute;
@@ -536,6 +571,7 @@ export interface FileRoutesById {
   "/_user/manage/$editionId/settings": typeof UserManageEditionIdSettingsRouteRoute;
   "/_user/manage/$editionId/submission-form": typeof UserManageEditionIdSubmissionFormRouteRouteWithChildren;
   "/_user/manage/$editionId/tracks": typeof UserManageEditionIdTracksRouteRouteWithChildren;
+  "/_user/manage/$editionId/venues": typeof UserManageEditionIdVenuesRouteRouteWithChildren;
   "/_user/jobs/_list/$jobId": typeof UserJobsListJobIdRoute;
   "/_user/teams/edit/$teamId": typeof UserTeamsEditTeamIdRoute;
   "/_user/jobs/_list/": typeof UserJobsListIndexRoute;
@@ -553,16 +589,19 @@ export interface FileRoutesById {
   "/_user/manage/$editionId/submission-form/more-info": typeof UserManageEditionIdSubmissionFormMoreInfoRoute;
   "/_user/manage/$editionId/submission-form/profile": typeof UserManageEditionIdSubmissionFormProfileRoute;
   "/_user/manage/$editionId/submission-form/session": typeof UserManageEditionIdSubmissionFormSessionRoute;
+  "/_user/manage/$editionId/venues/create": typeof UserManageEditionIdVenuesCreateRoute;
   "/_user/manage/$editionId/custom-fields/": typeof UserManageEditionIdCustomFieldsIndexRoute;
   "/_user/manage/$editionId/hosts/": typeof UserManageEditionIdHostsIndexRoute;
   "/_user/manage/$editionId/locations/": typeof UserManageEditionIdLocationsIndexRoute;
   "/_user/manage/$editionId/schedule/": typeof UserManageEditionIdScheduleIndexRoute;
   "/_user/manage/$editionId/submission-form/": typeof UserManageEditionIdSubmissionFormIndexRoute;
+  "/_user/manage/$editionId/venues/": typeof UserManageEditionIdVenuesIndexRoute;
   "/_user/_public/editions/$editionId/sessions/create": typeof UserPublicEditionsEditionIdSessionsCreateRoute;
   "/_user/manage/$editionId/custom-fields/edit/$customFieldId": typeof UserManageEditionIdCustomFieldsEditCustomFieldIdRoute;
   "/_user/manage/$editionId/locations/edit/$locationId": typeof UserManageEditionIdLocationsEditLocationIdRoute;
   "/_user/manage/$editionId/session-types/_list/create": typeof UserManageEditionIdSessionTypesListCreateRoute;
   "/_user/manage/$editionId/tracks/_list/create": typeof UserManageEditionIdTracksListCreateRoute;
+  "/_user/manage/$editionId/venues/edit/$venueId": typeof UserManageEditionIdVenuesEditVenueIdRoute;
   "/_user/_public/editions/$editionId/sessions/": typeof UserPublicEditionsEditionIdSessionsIndexRoute;
   "/_user/manage/$editionId/session-types/_list/": typeof UserManageEditionIdSessionTypesListIndexRoute;
   "/_user/manage/$editionId/sessions/_list/": typeof UserManageEditionIdSessionsListIndexRoute;
@@ -597,6 +636,7 @@ export interface FileRouteTypes {
     | "/manage/$editionId/settings"
     | "/manage/$editionId/submission-form"
     | "/manage/$editionId/tracks"
+    | "/manage/$editionId/venues"
     | "/jobs/$jobId"
     | "/teams/edit/$teamId"
     | "/jobs/"
@@ -611,16 +651,19 @@ export interface FileRouteTypes {
     | "/manage/$editionId/submission-form/more-info"
     | "/manage/$editionId/submission-form/profile"
     | "/manage/$editionId/submission-form/session"
+    | "/manage/$editionId/venues/create"
     | "/manage/$editionId/custom-fields/"
     | "/manage/$editionId/hosts/"
     | "/manage/$editionId/locations/"
     | "/manage/$editionId/schedule/"
     | "/manage/$editionId/submission-form/"
+    | "/manage/$editionId/venues/"
     | "/editions/$editionId/sessions/create"
     | "/manage/$editionId/custom-fields/edit/$customFieldId"
     | "/manage/$editionId/locations/edit/$locationId"
     | "/manage/$editionId/session-types/create"
     | "/manage/$editionId/tracks/create"
+    | "/manage/$editionId/venues/edit/$venueId"
     | "/editions/$editionId/sessions/"
     | "/manage/$editionId/session-types/"
     | "/manage/$editionId/sessions/"
@@ -658,16 +701,19 @@ export interface FileRouteTypes {
     | "/manage/$editionId/submission-form/more-info"
     | "/manage/$editionId/submission-form/profile"
     | "/manage/$editionId/submission-form/session"
+    | "/manage/$editionId/venues/create"
     | "/manage/$editionId/custom-fields"
     | "/manage/$editionId/hosts"
     | "/manage/$editionId/locations"
     | "/manage/$editionId/schedule"
     | "/manage/$editionId/submission-form"
+    | "/manage/$editionId/venues"
     | "/editions/$editionId/sessions/create"
     | "/manage/$editionId/custom-fields/edit/$customFieldId"
     | "/manage/$editionId/locations/edit/$locationId"
     | "/manage/$editionId/session-types/create"
     | "/manage/$editionId/tracks/create"
+    | "/manage/$editionId/venues/edit/$venueId"
     | "/editions/$editionId/sessions"
     | "/editions/$editionId/sessions/$sessionId/edit"
     | "/manage/$editionId/session-types/edit/$sessionTypeId"
@@ -700,6 +746,7 @@ export interface FileRouteTypes {
     | "/_user/manage/$editionId/settings"
     | "/_user/manage/$editionId/submission-form"
     | "/_user/manage/$editionId/tracks"
+    | "/_user/manage/$editionId/venues"
     | "/_user/jobs/_list/$jobId"
     | "/_user/teams/edit/$teamId"
     | "/_user/jobs/_list/"
@@ -717,16 +764,19 @@ export interface FileRouteTypes {
     | "/_user/manage/$editionId/submission-form/more-info"
     | "/_user/manage/$editionId/submission-form/profile"
     | "/_user/manage/$editionId/submission-form/session"
+    | "/_user/manage/$editionId/venues/create"
     | "/_user/manage/$editionId/custom-fields/"
     | "/_user/manage/$editionId/hosts/"
     | "/_user/manage/$editionId/locations/"
     | "/_user/manage/$editionId/schedule/"
     | "/_user/manage/$editionId/submission-form/"
+    | "/_user/manage/$editionId/venues/"
     | "/_user/_public/editions/$editionId/sessions/create"
     | "/_user/manage/$editionId/custom-fields/edit/$customFieldId"
     | "/_user/manage/$editionId/locations/edit/$locationId"
     | "/_user/manage/$editionId/session-types/_list/create"
     | "/_user/manage/$editionId/tracks/_list/create"
+    | "/_user/manage/$editionId/venues/edit/$venueId"
     | "/_user/_public/editions/$editionId/sessions/"
     | "/_user/manage/$editionId/session-types/_list/"
     | "/_user/manage/$editionId/sessions/_list/"
@@ -940,6 +990,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof UserManageEditionIdTracksRouteRouteImport;
       parentRoute: typeof UserManageEditionIdRouteRoute;
     };
+    "/_user/manage/$editionId/venues": {
+      id: "/_user/manage/$editionId/venues";
+      path: "/venues";
+      fullPath: "/manage/$editionId/venues";
+      preLoaderRoute: typeof UserManageEditionIdVenuesRouteRouteImport;
+      parentRoute: typeof UserManageEditionIdRouteRoute;
+    };
     "/_user/teams/edit/$teamId": {
       id: "/_user/teams/edit/$teamId";
       path: "/edit/$teamId";
@@ -1073,6 +1130,20 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof UserManageEditionIdTracksListRouteRouteImport;
       parentRoute: typeof UserManageEditionIdTracksRouteRoute;
     };
+    "/_user/manage/$editionId/venues/": {
+      id: "/_user/manage/$editionId/venues/";
+      path: "/";
+      fullPath: "/manage/$editionId/venues/";
+      preLoaderRoute: typeof UserManageEditionIdVenuesIndexRouteImport;
+      parentRoute: typeof UserManageEditionIdVenuesRouteRoute;
+    };
+    "/_user/manage/$editionId/venues/create": {
+      id: "/_user/manage/$editionId/venues/create";
+      path: "/create";
+      fullPath: "/manage/$editionId/venues/create";
+      preLoaderRoute: typeof UserManageEditionIdVenuesCreateRouteImport;
+      parentRoute: typeof UserManageEditionIdVenuesRouteRoute;
+    };
     "/_user/_public/editions/$editionId/sessions/": {
       id: "/_user/_public/editions/$editionId/sessions/";
       path: "/sessions";
@@ -1135,6 +1206,13 @@ declare module "@tanstack/react-router" {
       fullPath: "/manage/$editionId/tracks/create";
       preLoaderRoute: typeof UserManageEditionIdTracksListCreateRouteImport;
       parentRoute: typeof UserManageEditionIdTracksListRouteRoute;
+    };
+    "/_user/manage/$editionId/venues/edit/$venueId": {
+      id: "/_user/manage/$editionId/venues/edit/$venueId";
+      path: "/edit/$venueId";
+      fullPath: "/manage/$editionId/venues/edit/$venueId";
+      preLoaderRoute: typeof UserManageEditionIdVenuesEditVenueIdRouteImport;
+      parentRoute: typeof UserManageEditionIdVenuesRouteRoute;
     };
     "/_user/_public/editions/$editionId/sessions/$sessionId/": {
       id: "/_user/_public/editions/$editionId/sessions/$sessionId/";
@@ -1437,6 +1515,25 @@ const UserManageEditionIdTracksRouteRouteWithChildren =
     UserManageEditionIdTracksRouteRouteChildren,
   );
 
+interface UserManageEditionIdVenuesRouteRouteChildren {
+  UserManageEditionIdVenuesCreateRoute: typeof UserManageEditionIdVenuesCreateRoute;
+  UserManageEditionIdVenuesIndexRoute: typeof UserManageEditionIdVenuesIndexRoute;
+  UserManageEditionIdVenuesEditVenueIdRoute: typeof UserManageEditionIdVenuesEditVenueIdRoute;
+}
+
+const UserManageEditionIdVenuesRouteRouteChildren: UserManageEditionIdVenuesRouteRouteChildren =
+  {
+    UserManageEditionIdVenuesCreateRoute: UserManageEditionIdVenuesCreateRoute,
+    UserManageEditionIdVenuesIndexRoute: UserManageEditionIdVenuesIndexRoute,
+    UserManageEditionIdVenuesEditVenueIdRoute:
+      UserManageEditionIdVenuesEditVenueIdRoute,
+  };
+
+const UserManageEditionIdVenuesRouteRouteWithChildren =
+  UserManageEditionIdVenuesRouteRoute._addFileChildren(
+    UserManageEditionIdVenuesRouteRouteChildren,
+  );
+
 interface UserManageEditionIdRouteRouteChildren {
   UserManageEditionIdCustomFieldsRouteRoute: typeof UserManageEditionIdCustomFieldsRouteRouteWithChildren;
   UserManageEditionIdLocationsRouteRoute: typeof UserManageEditionIdLocationsRouteRouteWithChildren;
@@ -1446,6 +1543,7 @@ interface UserManageEditionIdRouteRouteChildren {
   UserManageEditionIdSettingsRouteRoute: typeof UserManageEditionIdSettingsRouteRoute;
   UserManageEditionIdSubmissionFormRouteRoute: typeof UserManageEditionIdSubmissionFormRouteRouteWithChildren;
   UserManageEditionIdTracksRouteRoute: typeof UserManageEditionIdTracksRouteRouteWithChildren;
+  UserManageEditionIdVenuesRouteRoute: typeof UserManageEditionIdVenuesRouteRouteWithChildren;
   UserManageEditionIdIndexRoute: typeof UserManageEditionIdIndexRoute;
   UserManageEditionIdHostsHostIdRoute: typeof UserManageEditionIdHostsHostIdRoute;
   UserManageEditionIdHostsIndexRoute: typeof UserManageEditionIdHostsIndexRoute;
@@ -1469,6 +1567,8 @@ const UserManageEditionIdRouteRouteChildren: UserManageEditionIdRouteRouteChildr
       UserManageEditionIdSubmissionFormRouteRouteWithChildren,
     UserManageEditionIdTracksRouteRoute:
       UserManageEditionIdTracksRouteRouteWithChildren,
+    UserManageEditionIdVenuesRouteRoute:
+      UserManageEditionIdVenuesRouteRouteWithChildren,
     UserManageEditionIdIndexRoute: UserManageEditionIdIndexRoute,
     UserManageEditionIdHostsHostIdRoute: UserManageEditionIdHostsHostIdRoute,
     UserManageEditionIdHostsIndexRoute: UserManageEditionIdHostsIndexRoute,

@@ -1,5 +1,4 @@
 import {
-    Alert,
     Paper,
     Stack,
     Table,
@@ -13,26 +12,24 @@ import {
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { type ReactNode, useCallback } from "react";
-import { ButtonLink, Link } from "#/components/Link/index.js";
+import { ButtonLink } from "#/components/Link/index.js";
 import { createSortableListKey, useSortableList } from "#/components/SortableList/index.js";
-import { useReorderLocationsMutation } from "#/mutations/location.ts";
+import { useReorderVenuesMutation } from "#/mutations/venue.ts";
 import { useQueryOptionsFactory } from "#/queries";
 import { reportReorderFailure } from "#/utils/api.ts";
-import { LocationRow } from "./-components/LocationRow.tsx";
+import { VenueRow } from "./-components/VenueRow.tsx";
 
-const listKey = createSortableListKey("locations");
+const listKey = createSortableListKey("venues");
 
 const Root = (): ReactNode => {
     const { editionId } = Route.useParams();
     const qof = useQueryOptionsFactory();
-    const locations = useSuspenseQuery(qof.location.list(editionId)).data;
     const venues = useSuspenseQuery(qof.venue.list(editionId)).data;
-    const venueNames = new Map(venues.map((venue) => [venue.id, venue.name]));
-    const reorderMutation = useReorderLocationsMutation(editionId);
+    const reorderMutation = useReorderVenuesMutation(editionId);
 
     const handleReorder = useCallback(
         (from: number, to: number) => {
-            const ordered = [...locations];
+            const ordered = [...venues];
             const [moved] = ordered.splice(from, 1);
 
             if (!moved) {
@@ -41,49 +38,39 @@ const Root = (): ReactNode => {
 
             ordered.splice(to, 0, moved);
             reorderMutation.mutate(
-                { locationIds: ordered.map((location) => location.id) },
+                { venueIds: ordered.map((venue) => venue.id) },
                 {
                     onError: (error) => {
-                        reportReorderFailure(error, "locations");
+                        reportReorderFailure(error, "venues");
                     },
                 },
             );
         },
-        [locations, reorderMutation],
+        [venues, reorderMutation],
     );
 
     useSortableList({
         listKey,
-        items: locations,
-        getItemId: (location) => location.id,
+        items: venues,
+        getItemId: (venue) => venue.id,
         onReorder: handleReorder,
-        describeItem: (index) => locations[index]?.name ?? "Location",
+        describeItem: (index) => venues[index]?.name ?? "Venue",
     });
 
     return (
         <>
             <Stack direction="row" spacing={2} sx={{ alignItems: "center", mb: 2 }}>
                 <Typography variant="h5" sx={{ mr: "auto" }}>
-                    Locations
+                    Venues
                 </Typography>
                 <ButtonLink
                     variant="contained"
-                    to="/manage/$editionId/locations/create"
+                    to="/manage/$editionId/venues/create"
                     params={{ editionId }}
                 >
-                    Add location
+                    Add venue
                 </ButtonLink>
             </Stack>
-
-            {venues.length === 0 && (
-                <Alert severity="info" sx={{ mb: 2 }}>
-                    Every location sits in a venue, and this edition has none yet.{" "}
-                    <Link to="/manage/$editionId/venues" params={{ editionId }}>
-                        Add a venue
-                    </Link>{" "}
-                    before adding locations.
-                </Alert>
-            )}
 
             <TableContainer component={Paper}>
                 <Table>
@@ -91,23 +78,25 @@ const Root = (): ReactNode => {
                         <TableRow>
                             <TableCell sx={{ width: 48 }} />
                             <TableCell>Name</TableCell>
-                            <TableCell>Venue</TableCell>
+                            <TableCell>Address</TableCell>
                             <TableCell>External key</TableCell>
                             <TableCell sx={{ width: 48 }} />
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {locations.length === 0 && (
+                        {venues.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={5}>There are no locations.</TableCell>
+                                <TableCell colSpan={5}>
+                                    There are no venues. A location needs one, so add a venue before
+                                    adding locations.
+                                </TableCell>
                             </TableRow>
                         )}
-                        {locations.map((location, index) => (
-                            <LocationRow
-                                key={location.id}
+                        {venues.map((venue, index) => (
+                            <VenueRow
+                                key={venue.id}
                                 editionId={editionId}
-                                location={location}
-                                venueName={venueNames.get(location.venue.id)}
+                                venue={venue}
                                 listKey={listKey}
                                 index={index}
                             />
@@ -119,12 +108,9 @@ const Root = (): ReactNode => {
     );
 };
 
-export const Route = createFileRoute("/_user/manage/$editionId/locations/")({
+export const Route = createFileRoute("/_user/manage/$editionId/venues/")({
     component: Root,
     loader: async ({ context, params }) => {
-        await Promise.all([
-            context.queryClient.ensureQueryData(context.qof.location.list(params.editionId)),
-            context.queryClient.ensureQueryData(context.qof.venue.list(params.editionId)),
-        ]);
+        await context.queryClient.ensureQueryData(context.qof.venue.list(params.editionId));
     },
 });

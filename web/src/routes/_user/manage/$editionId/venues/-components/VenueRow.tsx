@@ -22,40 +22,33 @@ import {
     type SortableListKey,
     useSortableItem,
 } from "#/components/SortableList/index.js";
-import { useDeleteLocationMutation } from "#/mutations/location.ts";
-import type { Location } from "#/queries/location.ts";
-import { defaultMutationErrorHandler } from "#/utils/api.ts";
+import { useDeleteVenueMutation } from "#/mutations/venue.ts";
+import type { Venue } from "#/queries/venue.ts";
+import { defaultMutationErrorHandler, hasErrorCode } from "#/utils/api.ts";
 
-type LocationRowProps = {
+type VenueRowProps = {
     editionId: string;
-    location: Location;
-    venueName: string | undefined;
+    venue: Venue;
     listKey: SortableListKey;
     index: number;
 };
 
-export const LocationRow = ({
-    editionId,
-    location,
-    venueName,
-    listKey,
-    index,
-}: LocationRowProps): ReactNode => {
+export const VenueRow = ({ editionId, venue, listKey, index }: VenueRowProps): ReactNode => {
     const { rowRef, handleRef, dragging, closestEdge } = useSortableItem<HTMLTableRowElement>({
         listKey,
-        itemId: location.id,
+        itemId: venue.id,
         index,
     });
-    const popupState = usePopupState({ variant: "popover", popupId: `location-${location.id}` });
-    const deleteMutation = useDeleteLocationMutation();
+    const popupState = usePopupState({ variant: "popover", popupId: `venue-${venue.id}` });
+    const deleteMutation = useDeleteVenueMutation();
     const confirm = useConfirm();
 
     const handleDelete = async () => {
         popupState.close();
 
         const { confirmed } = await confirm({
-            title: "Delete location",
-            description: `Do you really want to delete the location "${location.name}"?`,
+            title: "Delete venue",
+            description: `Do you really want to delete the venue "${venue.name}"?`,
             confirmationText: "Delete",
             confirmationButtonProps: { color: "error" },
         });
@@ -65,12 +58,21 @@ export const LocationRow = ({
         }
 
         deleteMutation.mutate(
-            { editionId, id: location.id },
+            { editionId, id: venue.id },
             {
                 onSuccess: () => {
-                    enqueueSnackbar("Location has been deleted", { variant: "success" });
+                    enqueueSnackbar("Venue has been deleted", { variant: "success" });
                 },
-                onError: defaultMutationErrorHandler,
+                onError: (error) => {
+                    if (hasErrorCode(error, "entity_in_use")) {
+                        enqueueSnackbar("Locations are still assigned to this venue.", {
+                            variant: "error",
+                        });
+                        return;
+                    }
+
+                    defaultMutationErrorHandler(error);
+                },
             },
         );
     };
@@ -92,26 +94,26 @@ export const LocationRow = ({
             </TableCell>
             <TableCell>
                 <Link
-                    to="/manage/$editionId/locations/edit/$locationId"
-                    params={{ editionId, locationId: location.id }}
+                    to="/manage/$editionId/venues/edit/$venueId"
+                    params={{ editionId, venueId: venue.id }}
                 >
-                    {location.name}
+                    {venue.name}
                 </Link>
             </TableCell>
-            <TableCell>{venueName}</TableCell>
-            <TableCell>{location.externalKey}</TableCell>
+            <TableCell sx={{ whiteSpace: "pre-line" }}>{venue.address}</TableCell>
+            <TableCell>{venue.externalKey}</TableCell>
             <TableCell sx={{ py: 0, textAlign: "right" }}>
                 <IconButton
                     size="small"
-                    aria-label={`Actions for ${location.name}`}
+                    aria-label={`Actions for ${venue.name}`}
                     {...bindTrigger(popupState)}
                 >
                     <MoreVertIcon />
                 </IconButton>
                 <Menu {...bindMenu(popupState)}>
                     <MenuItemLink
-                        to="/manage/$editionId/locations/edit/$locationId"
-                        params={{ editionId, locationId: location.id }}
+                        to="/manage/$editionId/venues/edit/$venueId"
+                        params={{ editionId, venueId: venue.id }}
                         onClick={() => {
                             popupState.close();
                         }}
@@ -119,14 +121,14 @@ export const LocationRow = ({
                         <ListItemIcon>
                             <EditIcon fontSize="small" />
                         </ListItemIcon>
-                        <ListItemText>Edit location</ListItemText>
+                        <ListItemText>Edit venue</ListItemText>
                     </MenuItemLink>
                     <Divider />
                     <MenuItem onClick={handleDelete} sx={{ color: "error.main" }}>
                         <ListItemIcon>
                             <DeleteIcon fontSize="small" sx={{ color: "error.main" }} />
                         </ListItemIcon>
-                        <ListItemText>Delete location</ListItemText>
+                        <ListItemText>Delete venue</ListItemText>
                     </MenuItem>
                 </Menu>
             </TableCell>
