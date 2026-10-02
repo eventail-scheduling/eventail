@@ -33,6 +33,7 @@ import { anythingWasRemoved, type SettleReport } from "#/queries/settle.js";
 import { defaultMutationErrorHandler } from "#/utils/api.ts";
 import { requireManager } from "#/utils/route-guards.ts";
 import { formResolver, plainDateSchema, zonedDateTimeSchema } from "#/utils/zod.js";
+import { EditionIdField } from "./-components/EditionIdField.js";
 import { MoveEditionDialog } from "./-components/MoveEditionDialog.js";
 
 const schema = z
@@ -311,6 +312,10 @@ const Root = (): ReactNode => {
                     </Button>
                 </Box>
             </Box>
+
+            <Divider sx={{ my: 4 }} />
+
+            <EditionIdField editionId={editionId} />
 
             {moveDialog.mount && asked && (
                 <MoveEditionDialog
