@@ -30,6 +30,7 @@ import { Route as UserJobsListIndexRouteImport } from "./routes/_user/jobs/_list
 import { Route as UserJobsListJobIdRouteImport } from "./routes/_user/jobs/_list/$jobId";
 import { Route as UserManageEditionIdIndexRouteImport } from "./routes/_user/manage/$editionId/index";
 import { Route as UserManageEditionIdCustomFieldsRouteRouteImport } from "./routes/_user/manage/$editionId/custom-fields/route";
+import { Route as UserManageEditionIdHostsRouteRouteImport } from "./routes/_user/manage/$editionId/hosts/route";
 import { Route as UserManageEditionIdLocationsRouteRouteImport } from "./routes/_user/manage/$editionId/locations/route";
 import { Route as UserManageEditionIdScheduleRouteRouteImport } from "./routes/_user/manage/$editionId/schedule/route";
 import { Route as UserManageEditionIdSessionTypesRouteRouteImport } from "./routes/_user/manage/$editionId/session-types/route";
@@ -182,6 +183,12 @@ const UserManageEditionIdCustomFieldsRouteRoute =
     path: "/custom-fields",
     getParentRoute: () => UserManageEditionIdRouteRoute,
   } as any);
+const UserManageEditionIdHostsRouteRoute =
+  UserManageEditionIdHostsRouteRouteImport.update({
+    id: "/hosts",
+    path: "/hosts",
+    getParentRoute: () => UserManageEditionIdRouteRoute,
+  } as any);
 const UserManageEditionIdLocationsRouteRoute =
   UserManageEditionIdLocationsRouteRouteImport.update({
     id: "/locations",
@@ -255,15 +262,15 @@ const UserManageEditionIdCustomFieldsCreateRoute =
   } as any);
 const UserManageEditionIdHostsIndexRoute =
   UserManageEditionIdHostsIndexRouteImport.update({
-    id: "/hosts/",
-    path: "/hosts/",
-    getParentRoute: () => UserManageEditionIdRouteRoute,
+    id: "/",
+    path: "/",
+    getParentRoute: () => UserManageEditionIdHostsRouteRoute,
   } as any);
 const UserManageEditionIdHostsHostIdRoute =
   UserManageEditionIdHostsHostIdRouteImport.update({
-    id: "/hosts/$hostId",
-    path: "/hosts/$hostId",
-    getParentRoute: () => UserManageEditionIdRouteRoute,
+    id: "/$hostId",
+    path: "/$hostId",
+    getParentRoute: () => UserManageEditionIdHostsRouteRoute,
   } as any);
 const UserManageEditionIdLocationsIndexRoute =
   UserManageEditionIdLocationsIndexRouteImport.update({
@@ -453,6 +460,7 @@ export interface FileRoutesByFullPath {
   "/teams/": typeof UserTeamsIndexRoute;
   "/editions/$editionId": typeof UserPublicEditionsEditionIdRouteRouteWithChildren;
   "/manage/$editionId/custom-fields": typeof UserManageEditionIdCustomFieldsRouteRouteWithChildren;
+  "/manage/$editionId/hosts": typeof UserManageEditionIdHostsRouteRouteWithChildren;
   "/manage/$editionId/locations": typeof UserManageEditionIdLocationsRouteRouteWithChildren;
   "/manage/$editionId/schedule": typeof UserManageEditionIdScheduleRouteRouteWithChildren;
   "/manage/$editionId/session-types": typeof UserManageEditionIdSessionTypesRouteRouteWithChildren;
@@ -564,6 +572,7 @@ export interface FileRoutesById {
   "/_user/teams/": typeof UserTeamsIndexRoute;
   "/_user/_public/editions/$editionId": typeof UserPublicEditionsEditionIdRouteRouteWithChildren;
   "/_user/manage/$editionId/custom-fields": typeof UserManageEditionIdCustomFieldsRouteRouteWithChildren;
+  "/_user/manage/$editionId/hosts": typeof UserManageEditionIdHostsRouteRouteWithChildren;
   "/_user/manage/$editionId/locations": typeof UserManageEditionIdLocationsRouteRouteWithChildren;
   "/_user/manage/$editionId/schedule": typeof UserManageEditionIdScheduleRouteRouteWithChildren;
   "/_user/manage/$editionId/session-types": typeof UserManageEditionIdSessionTypesRouteRouteWithChildren;
@@ -629,6 +638,7 @@ export interface FileRouteTypes {
     | "/teams/"
     | "/editions/$editionId"
     | "/manage/$editionId/custom-fields"
+    | "/manage/$editionId/hosts"
     | "/manage/$editionId/locations"
     | "/manage/$editionId/schedule"
     | "/manage/$editionId/session-types"
@@ -739,6 +749,7 @@ export interface FileRouteTypes {
     | "/_user/teams/"
     | "/_user/_public/editions/$editionId"
     | "/_user/manage/$editionId/custom-fields"
+    | "/_user/manage/$editionId/hosts"
     | "/_user/manage/$editionId/locations"
     | "/_user/manage/$editionId/schedule"
     | "/_user/manage/$editionId/session-types"
@@ -941,6 +952,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof UserManageEditionIdCustomFieldsRouteRouteImport;
       parentRoute: typeof UserManageEditionIdRouteRoute;
     };
+    "/_user/manage/$editionId/hosts": {
+      id: "/_user/manage/$editionId/hosts";
+      path: "/hosts";
+      fullPath: "/manage/$editionId/hosts";
+      preLoaderRoute: typeof UserManageEditionIdHostsRouteRouteImport;
+      parentRoute: typeof UserManageEditionIdRouteRoute;
+    };
     "/_user/manage/$editionId/locations": {
       id: "/_user/manage/$editionId/locations";
       path: "/locations";
@@ -1027,17 +1045,17 @@ declare module "@tanstack/react-router" {
     };
     "/_user/manage/$editionId/hosts/": {
       id: "/_user/manage/$editionId/hosts/";
-      path: "/hosts";
+      path: "/";
       fullPath: "/manage/$editionId/hosts/";
       preLoaderRoute: typeof UserManageEditionIdHostsIndexRouteImport;
-      parentRoute: typeof UserManageEditionIdRouteRoute;
+      parentRoute: typeof UserManageEditionIdHostsRouteRoute;
     };
     "/_user/manage/$editionId/hosts/$hostId": {
       id: "/_user/manage/$editionId/hosts/$hostId";
-      path: "/hosts/$hostId";
+      path: "/$hostId";
       fullPath: "/manage/$editionId/hosts/$hostId";
       preLoaderRoute: typeof UserManageEditionIdHostsHostIdRouteImport;
-      parentRoute: typeof UserManageEditionIdRouteRoute;
+      parentRoute: typeof UserManageEditionIdHostsRouteRoute;
     };
     "/_user/manage/$editionId/locations/": {
       id: "/_user/manage/$editionId/locations/";
@@ -1344,6 +1362,22 @@ const UserManageEditionIdCustomFieldsRouteRouteWithChildren =
     UserManageEditionIdCustomFieldsRouteRouteChildren,
   );
 
+interface UserManageEditionIdHostsRouteRouteChildren {
+  UserManageEditionIdHostsHostIdRoute: typeof UserManageEditionIdHostsHostIdRoute;
+  UserManageEditionIdHostsIndexRoute: typeof UserManageEditionIdHostsIndexRoute;
+}
+
+const UserManageEditionIdHostsRouteRouteChildren: UserManageEditionIdHostsRouteRouteChildren =
+  {
+    UserManageEditionIdHostsHostIdRoute: UserManageEditionIdHostsHostIdRoute,
+    UserManageEditionIdHostsIndexRoute: UserManageEditionIdHostsIndexRoute,
+  };
+
+const UserManageEditionIdHostsRouteRouteWithChildren =
+  UserManageEditionIdHostsRouteRoute._addFileChildren(
+    UserManageEditionIdHostsRouteRouteChildren,
+  );
+
 interface UserManageEditionIdLocationsRouteRouteChildren {
   UserManageEditionIdLocationsCreateRoute: typeof UserManageEditionIdLocationsCreateRoute;
   UserManageEditionIdLocationsIndexRoute: typeof UserManageEditionIdLocationsIndexRoute;
@@ -1536,6 +1570,7 @@ const UserManageEditionIdVenuesRouteRouteWithChildren =
 
 interface UserManageEditionIdRouteRouteChildren {
   UserManageEditionIdCustomFieldsRouteRoute: typeof UserManageEditionIdCustomFieldsRouteRouteWithChildren;
+  UserManageEditionIdHostsRouteRoute: typeof UserManageEditionIdHostsRouteRouteWithChildren;
   UserManageEditionIdLocationsRouteRoute: typeof UserManageEditionIdLocationsRouteRouteWithChildren;
   UserManageEditionIdScheduleRouteRoute: typeof UserManageEditionIdScheduleRouteRouteWithChildren;
   UserManageEditionIdSessionTypesRouteRoute: typeof UserManageEditionIdSessionTypesRouteRouteWithChildren;
@@ -1545,14 +1580,14 @@ interface UserManageEditionIdRouteRouteChildren {
   UserManageEditionIdTracksRouteRoute: typeof UserManageEditionIdTracksRouteRouteWithChildren;
   UserManageEditionIdVenuesRouteRoute: typeof UserManageEditionIdVenuesRouteRouteWithChildren;
   UserManageEditionIdIndexRoute: typeof UserManageEditionIdIndexRoute;
-  UserManageEditionIdHostsHostIdRoute: typeof UserManageEditionIdHostsHostIdRoute;
-  UserManageEditionIdHostsIndexRoute: typeof UserManageEditionIdHostsIndexRoute;
 }
 
 const UserManageEditionIdRouteRouteChildren: UserManageEditionIdRouteRouteChildren =
   {
     UserManageEditionIdCustomFieldsRouteRoute:
       UserManageEditionIdCustomFieldsRouteRouteWithChildren,
+    UserManageEditionIdHostsRouteRoute:
+      UserManageEditionIdHostsRouteRouteWithChildren,
     UserManageEditionIdLocationsRouteRoute:
       UserManageEditionIdLocationsRouteRouteWithChildren,
     UserManageEditionIdScheduleRouteRoute:
@@ -1570,8 +1605,6 @@ const UserManageEditionIdRouteRouteChildren: UserManageEditionIdRouteRouteChildr
     UserManageEditionIdVenuesRouteRoute:
       UserManageEditionIdVenuesRouteRouteWithChildren,
     UserManageEditionIdIndexRoute: UserManageEditionIdIndexRoute,
-    UserManageEditionIdHostsHostIdRoute: UserManageEditionIdHostsHostIdRoute,
-    UserManageEditionIdHostsIndexRoute: UserManageEditionIdHostsIndexRoute,
   };
 
 const UserManageEditionIdRouteRouteWithChildren =

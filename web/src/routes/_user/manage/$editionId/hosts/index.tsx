@@ -47,6 +47,7 @@ const Root = (): ReactNode => {
 
             <Box sx={{ mb: 2 }}>
                 <DebouncedTextField
+                    fullWidth
                     size="small"
                     label="Search hosts"
                     value={search.search}

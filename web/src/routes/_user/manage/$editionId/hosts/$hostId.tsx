@@ -33,7 +33,7 @@ const Root = (): ReactNode => {
     );
 
     return (
-        <Stack spacing={3} sx={{ mt: 2 }}>
+        <Stack spacing={3}>
             <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
                 {host.avatar?.processing === true ? (
                     <Skeleton variant="circular" width={40} height={40} />
