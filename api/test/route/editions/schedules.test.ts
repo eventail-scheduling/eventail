@@ -841,6 +841,9 @@ describe("schedules", () => {
             assert.equal(response.status, 304);
             assert.equal(response.headers.get("etag"), validator);
             assert.equal((await response.text()).length, 0);
+            // A poller sees mostly these, and a 304 has no body to carry a
+            // version in, which is why the contract version is a header.
+            assert.equal(response.headers.get("Eventail-Contract-Version"), "1");
         });
 
         it("lets an integration store the validator it was given", async () => {

@@ -18,6 +18,7 @@ import { registerRoutes } from "./route/index.js";
 import { registerOpenapiRoutes } from "./route/openapi.js";
 import { appConfig } from "./util/app-config.js";
 import { jwtLayer, jwtPayloadLayer } from "./util/auth.js";
+import { contractVersion, contractVersionHeader } from "./util/contract-version.js";
 import { logger } from "./util/logger.js";
 import { em } from "./util/mikro-orm.js";
 
@@ -52,6 +53,8 @@ router
                 "Cache-Control",
                 "no-store, no-cache, private, max-age=0",
             )
+            .overrideResponseHeader(contractVersionHeader, String(contractVersion))
+            .catchError()
             .withLayer(jsonApiMediaTypesLayer)
             .setRequestId()
             .propagateRequestId()
@@ -63,7 +66,12 @@ router
 
                 return logger.withContext({ requestId }, async () => await next.invoke(req));
             })
-            .withLayer(CorsLayer.veryPermissive().allowOrigin(appConfig.cors.origin).maxAge(86400))
+            .withLayer(
+                CorsLayer.veryPermissive()
+                    .allowOrigin(appConfig.cors.origin)
+                    .exposeHeaders([contractVersionHeader])
+                    .maxAge(86400),
+            )
             .catchError()
             .withLayer(jwtLayer)
             .fromFn((req: HttpRequest, next: HttpService) => {

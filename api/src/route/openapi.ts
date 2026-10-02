@@ -4,6 +4,7 @@ import { htmlResponse, type JsonSerializable, jsonResponse } from "@taxum/core/h
 import { m, type Router } from "@taxum/core/routing";
 import { OpenApiBuilder } from "openapi3-ts/oas31";
 import { z } from "zod";
+import { contractVersion } from "../util/contract-version.js";
 import { addOpenapiClockPaths } from "./clock.js";
 import { addOpenapiCustomFieldPaths } from "./editions/custom-fields.js";
 import { addOpenapiHostPaths } from "./editions/hosts.js";
@@ -72,8 +73,21 @@ export const buildOpenapiSpecJson = (): string => {
                 " the role or the relationship to the resource is what is missing. 409 means" +
                 " nobody could do it now, because the stored state conflicts with the request." +
                 " 422 means the submitted document is wrong on its own terms, including where" +
-                " it disagrees with how the edition is configured.",
+                " it disagrees with how the edition is configured." +
+                "\n\nEvery response to an endpoint below carries an" +
+                " Eventail-Contract-Version header, holding an integer that rises by one" +
+                " whenever a change breaks a client written against the previous number." +
+                " Anything a client can ignore, such as a new field or endpoint, leaves it" +
+                " alone. It is independent of this document's `version` field, which names" +
+                " the document rather than the contract, and of the release version. A" +
+                " client that reads it can tell whether it still understands this server" +
+                " before it has a token. The value this document was generated from is in" +
+                " `info.x-contract-version`.",
             version,
+            // Recorded here so the published per-version specs say which
+            // contract each release served; the header only says what a live
+            // server serves now.
+            "x-contract-version": contractVersion,
         },
     });
 
