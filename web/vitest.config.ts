@@ -11,12 +11,6 @@ const browserTests = "test/**/*.browser.test.{ts,tsx}";
 export default mergeConfig(
     viteConfig,
     defineConfig({
-        // Imported only from a web worker, which the dependency scan does not
-        // follow. Found mid-run instead, it makes Vite reload the test frames,
-        // and whichever test file was starting then never initializes.
-        optimizeDeps: {
-            include: ["hash-wasm"],
-        },
         test: {
             // Vite resolves tsconfig paths from the nearest tsconfig, whose
             // include covers src alone, so the prefix it maps there does not

@@ -121,6 +121,13 @@ export default defineConfig({
             },
         },
     },
+    // Imported only from a web worker, which the dependency scan does not
+    // follow. Found mid-run instead, it re-optimizes and reloads: in dev that
+    // lands under the first file someone picks, and under Vitest it reloads the
+    // test frames, so whichever test file was starting never initializes.
+    optimizeDeps: {
+        include: ["hash-wasm"],
+    },
     server: {
         port: 12000,
     },
